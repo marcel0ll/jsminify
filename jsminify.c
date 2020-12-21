@@ -2,6 +2,7 @@
 #include <stdio.h>
 #include <tree_sitter/api.h>
 #include <math.h>
+#include <fmt/core.h>
 #include "../tree-sitter-visitor/tree-sitter-visitor.h"
 
 void node_keyword (TSNode node, char * text) {
@@ -129,26 +130,26 @@ size_t len_str_int_base (double value, int base) {
 void node_number (TSNode node, struct visit_context * context) {
   char * text = ts_node_text(node, context);
   char * subtext = NULL;
-
   double value;
-  if (strlen(text) > 2) {
+  size_t text_len = strlen(text);
+  if (text_len > 2) {
     if (starts_with("0b", text) || starts_with("0B", text)) {
       // binary
-      size_t len = strlen(text) - 2;
+      size_t len = text_len - 2;
       subtext = malloc(len + 1);
       strncpy(subtext, &text[2], len);
       subtext[len] = '\0';
       value = strtoll(subtext, NULL, 2);
     } else if (starts_with("0x", text) || starts_with("0X", text)) {
       // hex
-      size_t len = strlen(text) - 2;
+      size_t len = text_len - 2;
       subtext = malloc(len + 1);
       strncpy(subtext, &text[2], len);
       subtext[len] = '\0';
       value = strtoll(subtext, NULL, 16);
     } else if (starts_with("0o", text) || starts_with("0O", text)) {
       // oct
-      size_t len = strlen(text) - 2;
+      size_t len = text_len - 2;
       subtext = malloc(len + 1);
       strncpy(subtext, &text[2], len);
       subtext[len] = '\0';
@@ -158,7 +159,7 @@ void node_number (TSNode node, struct visit_context * context) {
   
   if (subtext == NULL && strlen(text) > 1 && starts_with("0", text) && !starts_with("0.", text)) {
     // oct
-    size_t len = strlen(text) - 1;
+    size_t len = text_len - 1;
     subtext = malloc(len + 1);
     strncpy(subtext, &text[1], len);
     subtext[len] = '\0';
@@ -173,21 +174,21 @@ void node_number (TSNode node, struct visit_context * context) {
       value = strtoll(text, NULL, 10);
     }
   } else if (subtext == NULL && strstr(text, "e") || strstr(text, "E")) {
-    size_t len = strlen(text);
+    size_t len = text_len;
     subtext = malloc(len + 1);
     strncpy(subtext, text, len);
     subtext[len] = '\0';
 
     value = strtold(text, NULL);
   } else if (subtext == NULL && strstr(text, ".")) {
-    size_t len = strlen(text);
+    size_t len = text_len;
     subtext = malloc(len + 1);
     strncpy(subtext, text, len);
     subtext[len] = '\0';
 
     value = strtold(text, NULL);
   } else if (subtext == NULL) {
-    size_t len = strlen(text);
+    size_t len = text_len;
     subtext = malloc(len + 1);
     strncpy(subtext, text, len);
     subtext[len] = '\0';
@@ -233,8 +234,7 @@ void node_number (TSNode node, struct visit_context * context) {
     }
   }
 
-  // if decimal value is shorter
-  if (new_text != NULL && strlen(new_text) < strlen(text))
+  if (new_text != NULL && strlen(new_text) < text_len)
     text = new_text;
 
   if (new_text != NULL)
