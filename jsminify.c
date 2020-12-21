@@ -92,45 +92,45 @@ int count_char_at_end(const char *str, const char *target) {
   return count;
 }
 
-size_t len_str_int (long long int value) {
+size_t len_str_int (double value) {
   if (value == 0) return 1;
 
   size_t len = 0;
   if (value < 0) {
     len++;
-    value = llabs(value);
+    value = fabs(value);
   }
 
-  if (value == 1) {
+  if (value <= 1) {
     len++;
     return len;
   }
 
-  return (size_t)((ceil(log10(value))) + len);
+  return (size_t)((ceill(log10(value))) + len);
 }
 
-size_t len_str_int_base (long long int value, int base) {
+size_t len_str_int_base (double value, int base) {
   if (value == 0) return 1;
 
   size_t len = 0;
   if (value < 0) {
     len++;
-    value = llabs(value);
+    value = fabs(value);
   }
 
-  if (value == 1) {
+  if (value <= 1) {
     len++;
     return len;
   }
 
-  return (int)((ceil(log10(value) / log10(base))) + len);
+  return (int)((ceill(log10(value) / log10(base))) + len);
 }
 
 void node_number (TSNode node, struct visit_context * context) {
   char * text = ts_node_text(node, context);
   char * subtext = NULL;
 
-  long long int value;
+  double value;
   if (strlen(text) > 2) {
     if (starts_with("0b", text) || starts_with("0B", text)) {
       // binary
@@ -138,21 +138,21 @@ void node_number (TSNode node, struct visit_context * context) {
       subtext = malloc(len + 1);
       strncpy(subtext, &text[2], len);
       subtext[len] = '\0';
-      value = strtol(subtext, NULL, 2);
+      value = strtoll(subtext, NULL, 2);
     } else if (starts_with("0x", text) || starts_with("0X", text)) {
       // hex
       size_t len = strlen(text) - 2;
       subtext = malloc(len + 1);
       strncpy(subtext, &text[2], len);
       subtext[len] = '\0';
-      value = strtol(subtext, NULL, 16);
+      value = strtoll(subtext, NULL, 16);
     } else if (starts_with("0o", text) || starts_with("0O", text)) {
       // oct
       size_t len = strlen(text) - 2;
       subtext = malloc(len + 1);
       strncpy(subtext, &text[2], len);
       subtext[len] = '\0';
-      value = strtol(subtext, NULL, 8);
+      value = strtoll(subtext, NULL, 8);
     }
   } 
   
@@ -162,7 +162,7 @@ void node_number (TSNode node, struct visit_context * context) {
     subtext = malloc(len + 1);
     strncpy(subtext, &text[1], len);
     subtext[len] = '\0';
-    value = strtol(subtext, NULL, 8);
+    value = strtoll(subtext, NULL, 8);
     if (value == 0L) {
       free(subtext);
       size_t len = strlen(text);
@@ -170,26 +170,36 @@ void node_number (TSNode node, struct visit_context * context) {
       strncpy(subtext, text, len);
       subtext[len] = '\0';
 
-      value = strtol(text, NULL, 10);
+      value = strtoll(text, NULL, 10);
     }
   } else if (subtext == NULL && strstr(text, "e") || strstr(text, "E")) {
-    // break string into rad and exponent
+    size_t len = strlen(text);
+    subtext = malloc(len + 1);
+    strncpy(subtext, text, len);
+    subtext[len] = '\0';
+
+    value = strtold(text, NULL);
   } else if (subtext == NULL && strstr(text, ".")) {
-    // not sure
+    size_t len = strlen(text);
+    subtext = malloc(len + 1);
+    strncpy(subtext, text, len);
+    subtext[len] = '\0';
+
+    value = strtold(text, NULL);
   } else if (subtext == NULL) {
     size_t len = strlen(text);
     subtext = malloc(len + 1);
     strncpy(subtext, text, len);
     subtext[len] = '\0';
 
-    value = strtol(text, NULL, 10);
+    value = strtoll(text, NULL, 10);
   }
 
   char * new_text =  NULL;
   if (subtext != NULL) {
-    size_t enough = ((len_str_int(value) + 1) * sizeof(char));
-    new_text = malloc(enough);
-    sprintf(new_text, "%lld", value);
+    new_text = malloc(1000);
+    sprintf(new_text, "%g", value);
+    new_text[strlen(new_text)] = '\0';
   }
 
   // if number ends with 0s, rewrite it as RADeEXPO
@@ -199,7 +209,7 @@ void node_number (TSNode node, struct visit_context * context) {
       size_t enough = ((len_str_int(zeroes) + 1) * sizeof(char));
       char * value_text = malloc(enough);
 
-      size_t rad_len = strlen(text) - zeroes;
+      size_t rad_len = strlen(new_text) - zeroes;
       char * rad = malloc(rad_len + 1);
       memcpy(rad, text, rad_len);
       rad[rad_len] = '\0';
@@ -208,15 +218,17 @@ void node_number (TSNode node, struct visit_context * context) {
       free(new_text);
       new_text = value_text;
     } else {
-      size_t str_10_len = len_str_int(value);
+      size_t str_10_len = strlen(new_text);
       // size of value in hex + "0x"
       size_t str_16_len = len_str_int_base(value, 16) + 2;
       if (str_16_len < str_10_len) {
         // convert to hex
-        char * value_text = malloc(str_16_len + 1);
-        sprintf(value_text, "0x%llx", value);
-        free(new_text);
-        new_text = value_text;
+        char * new_value_text = malloc(str_16_len + 1);
+        sprintf(new_value_text, "0x%g", value);
+        if (strlen(new_value_text) < strlen(new_text)) {
+          free(new_text);
+          new_text = new_value_text;
+        }
       }
     }
   }
