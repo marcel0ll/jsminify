@@ -2,7 +2,6 @@
 #include <stdio.h>
 #include <tree_sitter/api.h>
 #include <math.h>
-#include <fmt/core.h>
 #include "../tree-sitter-visitor/tree-sitter-visitor.h"
 
 void node_keyword (TSNode node, char * text) {
@@ -127,6 +126,20 @@ size_t len_str_int_base (double value, int base) {
   return (int)((ceill(log10(value) / log10(base))) + len);
 }
 
+char *strremove(char *str, const char *sub, int ignore) {
+    char *p, *q, *r;
+    size_t len = strlen(sub) - ignore;
+    if ((q = r = strstr(str, sub)) != NULL) {
+        q = r = q + ignore;
+        while ((r = strstr(p = r + len, sub)) != NULL) {
+            while (p < r)
+                *q++ = *p++;
+        }
+        while ((*q++ = *p++) != '\0')
+            continue;
+    }
+    return str;
+}
 void node_number (TSNode node, struct visit_context * context) {
   char * text = ts_node_text(node, context);
   char * subtext = NULL;
@@ -197,9 +210,22 @@ void node_number (TSNode node, struct visit_context * context) {
   }
 
   char * new_text =  NULL;
+  long long int lli = (long long int) value;
+  double res = value - lli;
   if (subtext != NULL) {
-    new_text = malloc(1000);
-    sprintf(new_text, "%g", value);
+    if (res > 0) {
+      new_text = malloc(1000);
+      sprintf(new_text, "%.16g", value);
+
+      // remove -0 and +0
+      char * nt = NULL;
+      nt = strremove(new_text, "e+0", 1);
+      nt = strremove(new_text, "e+", 1);
+      nt = strremove(new_text, "e-0", 2);
+    } else {
+      new_text = malloc(1000);
+      sprintf(new_text, "%lld", lli);
+    }
     new_text[strlen(new_text)] = '\0';
   }
 
@@ -218,14 +244,14 @@ void node_number (TSNode node, struct visit_context * context) {
       sprintf(value_text, "%se%d", rad, zeroes);
       free(new_text);
       new_text = value_text;
-    } else {
+    } else if(res <= 0) {
       size_t str_10_len = strlen(new_text);
       // size of value in hex + "0x"
-      size_t str_16_len = len_str_int_base(value, 16) + 2;
+      size_t str_16_len = len_str_int_base(lli, 16) + 2;
       if (str_16_len < str_10_len) {
         // convert to hex
         char * new_value_text = malloc(str_16_len + 1);
-        sprintf(new_value_text, "0x%g", value);
+        sprintf(new_value_text, "0x%llx", lli);
         if (strlen(new_value_text) < strlen(new_text)) {
           free(new_text);
           new_text = new_value_text;
