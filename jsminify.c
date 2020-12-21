@@ -80,11 +80,37 @@ int ends_with(const char *str, const char *target) {
 }
 
 size_t len_str_int (long long int value) {
-  return (int)(ceil(log10(value)));
+  if (value == 0) return 1;
+
+  size_t len = 0;
+  if (value < 0) {
+    len++;
+    value = llabs(value);
+  }
+
+  if (value == 1) {
+    len++;
+    return len;
+  }
+
+  return (size_t)((ceil(log10(value))) + len);
 }
 
 size_t len_str_int_base (long long int value, int base) {
-  return (int)(ceil(log10(value) / log10(base)));
+  if (value == 0) return 1;
+
+  size_t len = 0;
+  if (value < 0) {
+    len++;
+    value = llabs(value);
+  }
+
+  if (value == 1) {
+    len++;
+    return len;
+  }
+
+  return (int)((ceil(log10(value) / log10(base))) + len);
 }
 
 void node_number (TSNode node, struct visit_context * context) {
@@ -92,38 +118,56 @@ void node_number (TSNode node, struct visit_context * context) {
   char * subtext = NULL;
 
   long long int value;
-  if (starts_with("0b", text) || starts_with("0B", text)) {
-    // binary
-    size_t len = strlen(text) - 2;
-    subtext = malloc(len + 1);
-    strncpy(subtext, &text[2], len);
-    value = strtol(subtext, NULL, 2);
-  } else if (starts_with("0x", text) || starts_with("0X", text)) {
-    // hex
-    size_t len = strlen(text) - 2;
-    subtext = malloc(len + 1);
-    strncpy(subtext, &text[2], len);
-    value = strtol(subtext, NULL, 16);
-  } else if (starts_with("0o", text) || starts_with("0O", text)) {
-    // oct
-    size_t len = strlen(text) - 2;
-    subtext = malloc(len + 1);
-    strncpy(subtext, &text[2], len);
-    value = strtol(subtext, NULL, 8);
-  } else if (starts_with("0", text)) {
+  if (strlen(text) > 2) {
+    if (starts_with("0b", text) || starts_with("0B", text)) {
+      // binary
+      size_t len = strlen(text) - 2;
+      subtext = malloc(len + 1);
+      strncpy(subtext, &text[2], len);
+      subtext[len] = '\0';
+      value = strtol(subtext, NULL, 2);
+    } else if (starts_with("0x", text) || starts_with("0X", text)) {
+      // hex
+      size_t len = strlen(text) - 2;
+      subtext = malloc(len + 1);
+      strncpy(subtext, &text[2], len);
+      subtext[len] = '\0';
+      value = strtol(subtext, NULL, 16);
+    } else if (starts_with("0o", text) || starts_with("0O", text)) {
+      // oct
+      size_t len = strlen(text) - 2;
+      subtext = malloc(len + 1);
+      strncpy(subtext, &text[2], len);
+      subtext[len] = '\0';
+      value = strtol(subtext, NULL, 8);
+    }
+  } 
+  
+  if (subtext == NULL && strlen(text) > 1 && starts_with("0", text)) {
     // oct
     size_t len = strlen(text) - 1;
     subtext = malloc(len + 1);
     strncpy(subtext, &text[1], len);
+    subtext[len] = '\0';
     value = strtol(subtext, NULL, 8);
-  } else if (strstr(text, "e") || strstr(text, "E")) {
+    if (value == 0L) {
+      free(subtext);
+      size_t len = strlen(text);
+      subtext = malloc(len + 1);
+      strncpy(subtext, text, len);
+      subtext[len] = '\0';
+
+      value = strtol(text, NULL, 10);
+    }
+  } else if (subtext == NULL && strstr(text, "e") || strstr(text, "E")) {
     // break string into rad and exponent
-  } else if (strstr(text, ".")) {
+  } else if (subtext == NULL && strstr(text, ".")) {
     // not sure
-  } else {
+  } else if (subtext == NULL) {
     size_t len = strlen(text);
     subtext = malloc(len + 1);
     strncpy(subtext, text, len);
+    subtext[len] = '\0';
 
     value = strtol(text, NULL, 10);
   }
@@ -262,6 +306,7 @@ int main(int argc, char * argv[]) {
   context_add_multiple_visitors(context, keyword_types, node_keyword);
 
   visit_tree(root_node, context);
+  printf("\n");
 
   context_delete(context);
   ts_tree_delete(tree);
