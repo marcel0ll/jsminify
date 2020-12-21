@@ -1,5 +1,6 @@
 clang                                   \
   -I ../tree-sitter/lib/include            \
+  -lm \
   jsminify.c                    \
   ../tree-sitter/libtree-sitter.a          \
   ../tree-sitter-javascript/src/parser.c         \
