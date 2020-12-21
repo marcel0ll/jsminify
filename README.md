@@ -28,6 +28,7 @@ General tasks related to this library
   * [ ] DEBUG flag
   * [ ] check memory allocation/disallocation
   * [ ] are the "includes" done right?
+  * [ ] better string formatting library
 
 ### Minification
 
@@ -39,6 +40,7 @@ Tasks related to optimzations that can be done to the code without problems.
 
 - [ ] Remove unnecessary ";" on last block statement
 - [ ] Convert numbers to the least amount of characters(0xff -> 255)
+  * [ ] improve scientific notation 
 
 ### Compression
 - [ ] Transform scoped parameters identifiers in shorter versions. ex.: `function(foo){foo()}` => `function(a){a()}`
