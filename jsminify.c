@@ -285,7 +285,7 @@ int main(int argc, char * argv[]) {
   context_add_multiple_visitors(context, semi_types, node_semi);
 
   const char * keyword_space_types[] = { "import", "export", "default", "const",
-    "new", "var", "let", "else", "case", "throw",
+    "new", "var", "let", "else", "case", "throw", "void",
     "return", "delete", NULL};
   context_add_multiple_visitors(context, keyword_space_types, node_keyword_space);
 
@@ -302,7 +302,7 @@ int main(int argc, char * argv[]) {
     "*=", "/=", "&=", "|=", "<=", ">=", "!=", "===", "!==", ",",  "(",  ")",
     "<",  ">",  "|",  "^",  "&",  ">>", ">>>", "<<", "[",  "]",  "{",  "}",
     "||", "&&", "from", "true", "false", "try", "catch", "finally", "with",
-    "super", "extends", "void", "/", NULL };
+    "super", "extends", "/", NULL };
   context_add_multiple_visitors(context, keyword_types, node_keyword);
 
   visit_tree(root_node, context);
