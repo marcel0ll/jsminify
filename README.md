@@ -5,6 +5,13 @@ tree-sitter-javascript grammar to create a parser and uses tree-sitter-visitor
 to visit each node of a JavaScript AST. For each visited node it is generated
 javascript code that is minified.
 
+## Dependencies
+
+[tree-sitter](https://github.com/tree-sitter/tree-sitter)
+[tree-sitter-javascript](https://github.com/tree-sitter/tree-sitter-javascript)
+[tree-sitter-visitor](https://github.com/marcel0ll/tree-sitter-visitor)
+[hashmap](https://github.com/tidwall/hashmap.c)
+
 ## To Do
 
 ### General
