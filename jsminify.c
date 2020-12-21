@@ -66,7 +66,20 @@ bool starts_with(const char *pre, const char *str) {
   return lenstr < lenpre ? false : memcmp(pre, str, lenpre) == 0;
 }
 
-int ends_with(const char *str, const char *target) {
+int count_char_at_start(const char *str, const char *target) {
+  size_t lenstr = strlen(str);
+  int count = 0;
+  char * c = str;
+
+  while (memcmp(c, target, 1) == 0 && c < &str[lenstr - 1]) {
+    count++;
+    c++;
+  }
+
+  return count;
+}
+
+int count_char_at_end(const char *str, const char *target) {
   size_t lenstr = strlen(str);
   int count = 0;
   char * c = &str[lenstr - 1];
@@ -143,7 +156,7 @@ void node_number (TSNode node, struct visit_context * context) {
     }
   } 
   
-  if (subtext == NULL && strlen(text) > 1 && starts_with("0", text)) {
+  if (subtext == NULL && strlen(text) > 1 && starts_with("0", text) && !starts_with("0.", text)) {
     // oct
     size_t len = strlen(text) - 1;
     subtext = malloc(len + 1);
@@ -181,7 +194,7 @@ void node_number (TSNode node, struct visit_context * context) {
 
   // if number ends with 0s, rewrite it as RADeEXPO
   if(new_text != NULL) {
-    int zeroes = ends_with(new_text, "0");
+    int zeroes = count_char_at_end(new_text, "0");
     if (zeroes > 2) {
       size_t enough = ((len_str_int(zeroes) + 1) * sizeof(char));
       char * value_text = malloc(enough);
