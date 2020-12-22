@@ -92,46 +92,36 @@ int count_char_at_end(const char *str, const char *target) {
   return count;
 }
 
-size_t len_str_int (double value) {
+size_t len_str_int (long long int value) {
   if (value == 0) return 1;
 
-  size_t len = 0;
+  size_t sig = 0;
   if (value < 0) {
-    len++;
-    value = fabs(value);
+    value = value * -1;
+    sig = 1;
   }
 
-  if (value <= 1) {
-    len++;
-    return len;
-  }
-
-  return (size_t)((ceill(log10(value))) + len);
+  return (size_t)((ceill(log10(value + 1))) + sig);
 }
 
-size_t len_str_int_base (double value, int base) {
+size_t len_str_int_base (long long int value, int base) {
   if (value == 0) return 1;
 
-  size_t len = 0;
+  size_t sig = 0;
   if (value < 0) {
-    len++;
-    value = fabs(value);
+    value = value * -1;
+    sig = 1;
   }
 
-  if (value <= 1) {
-    len++;
-    return len;
-  }
-
-  return (int)((ceill(log10(value) / log10(base))) + len);
+  return (size_t)(ceill(log10(value + 1) / log10(base)) + sig);
 }
 
-char *strremove(char *str, const char *sub, int ignore) {
+char *strremove(char *str, const char *find, int ignore) {
     char *p, *q, *r;
-    size_t len = strlen(sub) - ignore;
-    if ((q = r = strstr(str, sub)) != NULL) {
+    size_t len = strlen(find) - ignore;
+    if ((q = r = strstr(str, find)) != NULL) {
         q = r = q + ignore;
-        while ((r = strstr(p = r + len, sub)) != NULL) {
+        while ((r = strstr(p = r + len, find)) != NULL) {
             while (p < r)
                 *q++ = *p++;
         }
@@ -140,139 +130,140 @@ char *strremove(char *str, const char *sub, int ignore) {
     }
     return str;
 }
-void node_number (TSNode node, struct visit_context * context) {
-  char * text = ts_node_text(node, context);
-  char * subtext = NULL;
-  double value;
-  size_t text_len = strlen(text);
-  if (text_len > 2) {
-    if (starts_with("0b", text) || starts_with("0B", text)) {
-      // binary
-      size_t len = text_len - 2;
-      subtext = malloc(len + 1);
-      strncpy(subtext, &text[2], len);
-      subtext[len] = '\0';
-      value = strtoll(subtext, NULL, 2);
-    } else if (starts_with("0x", text) || starts_with("0X", text)) {
-      // hex
-      size_t len = text_len - 2;
-      subtext = malloc(len + 1);
-      strncpy(subtext, &text[2], len);
-      subtext[len] = '\0';
-      value = strtoll(subtext, NULL, 16);
-    } else if (starts_with("0o", text) || starts_with("0O", text)) {
-      // oct
-      size_t len = text_len - 2;
-      subtext = malloc(len + 1);
-      strncpy(subtext, &text[2], len);
-      subtext[len] = '\0';
-      value = strtoll(subtext, NULL, 8);
-    }
-  } 
-  
-  if (subtext == NULL && strlen(text) > 1 && starts_with("0", text) && !starts_with("0.", text)) {
-    // oct
-    size_t len = text_len - 1;
-    subtext = malloc(len + 1);
-    strncpy(subtext, &text[1], len);
-    subtext[len] = '\0';
-    value = strtoll(subtext, NULL, 8);
-    if (value == 0L) {
-      free(subtext);
-      size_t len = strlen(text);
-      subtext = malloc(len + 1);
-      strncpy(subtext, text, len);
-      subtext[len] = '\0';
 
-      value = strtoll(text, NULL, 10);
-    }
-  } else if (subtext == NULL && strstr(text, "e") || strstr(text, "E")) {
-    size_t len = text_len;
-    subtext = malloc(len + 1);
-    strncpy(subtext, text, len);
-    subtext[len] = '\0';
-
-    value = strtold(text, NULL);
-  } else if (subtext == NULL && strstr(text, ".")) {
-    size_t len = text_len;
-    subtext = malloc(len + 1);
-    strncpy(subtext, text, len);
-    subtext[len] = '\0';
-
-    value = strtold(text, NULL);
-  } else if (subtext == NULL) {
-    size_t len = text_len;
-    subtext = malloc(len + 1);
-    strncpy(subtext, text, len);
-    subtext[len] = '\0';
-
-    value = strtoll(text, NULL, 10);
+size_t count_digits(const char *str) {
+  char * s;
+  size_t count = 0;
+  if ((s = strstr(str, ".")) == NULL) {
+    count = strlen(str);
+  } else {
+    char *p = str;
+    while(p++ < s)
+      count++;
   }
 
-  char * new_text =  NULL;
-  long long int lli = (long long int) value;
-  double res = value - lli;
-  if (subtext != NULL) {
-    if (res > 0) {
-      new_text = malloc(1000);
-      sprintf(new_text, "%.16g", value);
+  return count;
+}
 
-      // remove -0 and +0
-      char * nt = NULL;
-      nt = strremove(new_text, "e+0", 1);
-      nt = strremove(new_text, "e+", 1);
-      nt = strremove(new_text, "e-0", 2);
-    } else {
-      new_text = malloc(1000);
-      sprintf(new_text, "%lld", lli);
+size_t count_precision(const char *str) {
+  char * s;
+  size_t count = 0;
+  if ((s = strstr(str, ".")) != NULL) {
+    s++;
+    while(*s != '\0' && *s != 'e' && *s != 'E') {
+      count++;
+      s++;
     }
-    new_text[strlen(new_text)] = '\0';
   }
 
-  // if number ends with 0s, rewrite it as RADeEXPO
-  if(new_text != NULL) {
-    int zeroes = count_char_at_end(new_text, "0");
-    if (zeroes > 2) {
-      size_t enough = ((len_str_int(zeroes) + 1) * sizeof(char));
-      char * value_text = malloc(enough);
+  return count;
+}
 
-      size_t rad_len = strlen(new_text) - zeroes;
-      char * rad = malloc(rad_len + 1);
-      memcpy(rad, text, rad_len);
-      rad[rad_len] = '\0';
+char *strreplace(char *str, const char *find, const char *replace) {
+    char *r;
 
-      sprintf(value_text, "%se%d", rad, zeroes);
-      free(new_text);
-      new_text = value_text;
-    } else if(res <= 0) {
-      size_t str_10_len = strlen(new_text);
-      // size of value in hex + "0x"
-      size_t str_16_len = len_str_int_base(lli, 16) + 2;
-      if (str_16_len < str_10_len) {
-        // convert to hex
-        char * new_value_text = malloc(str_16_len + 1);
-        sprintf(new_value_text, "0x%llx", lli);
-        if (strlen(new_value_text) < strlen(new_text)) {
-          free(new_text);
-          new_text = new_value_text;
+    if ((r = strstr(str, find)) != NULL) {
+      char *c, *e;
+      size_t str_len = strlen(str);
+      size_t find_len = strlen(find);
+      size_t replace_len = strlen(replace);
+
+      if ( replace_len > find_len) {
+        char *s;
+        size_t add_len = replace_len - find_len;
+        str = realloc(str, strlen(str) + add_len + 1);
+        s = e = str + str_len;
+        c = str + str_len - add_len + 1;
+        while(c <= e) {
+          *s++ = *c++;
         }
+      } 
+
+      e = r + replace_len;
+      c = (char *)replace;
+      while(c != NULL) {
+        *r++ = *c++;
+      }
+
+      if (r < e) {
+        while ((*r++ = *e++) != '\0')
+            continue;
       }
     }
+
+    return str;
+}
+
+char *strremovedot0(char *str) {
+  char *f;
+  if ((f = strstr(str, ".")) != NULL) {
+    char *s, *e;
+    if ((s = strstr(str, "e")) == NULL)
+      if ((s = strstr(str, "E")) == NULL)
+        s = str + strlen(str);
+    e = s--;
+    while((*s == '0' || *s == '.') && s > str) 
+      s--;
+    s++;
+    if (s < e)
+      while((*s++ = *e++) != '\0')
+        continue;
   }
 
-  if (new_text != NULL && strlen(new_text) < text_len)
-    text = new_text;
+  return str;
+}
 
-  if (new_text != NULL)
-    printf("%s", new_text);
-  else 
-    printf("%s", text);
+void node_number (TSNode node, struct visit_context * context) {
+  char * text = ts_node_text(node, context);
+  // remove non relevant right 0
+  text = strremovedot0(text);
 
-  if (new_text != NULL) {
-    free(new_text);
+  size_t text_len = strlen(text);
+  double value;
+  int precision = 0;
+  int digits = 0;
+  int base = 10;
+  int move = 2;
+  int e = 0;
+  if (starts_with("0b", text) || starts_with("0B", text)) {
+    base = 2;
+  } else if (starts_with("0x", text) || starts_with("0X", text)) {
+    base = 16;
+  } else if (starts_with("0o", text) || starts_with("0O", text)) {
+    base = 8;
+  } else if (strstr(text, ".") == NULL && starts_with("0", text)) {
+    base = 8;
+    move = 1;
   }
-  if (subtext != NULL) {
-    free(subtext);
+
+  if (base != 10) {
+    value = strtoll(&text[move], NULL, base);
+    if (value == 0L) {
+      value = strtoll(text, NULL, 10);
+    }
+  } else {
+    precision = count_precision(text);
+    digits = count_digits(text);
+    value = strtold(text, NULL);
+  } 
+
+  if (base != 16 && strstr(text, "e") != NULL) {
+    e = 1;
+  }
+
+  if (precision == 0 && !e) {
+    if (len_str_int(value) <= len_str_int_base(value, 16) + 2)
+      printf("%lld", (long long int)value);
+    else
+      printf("0x%llx", (long long int)value);
+  } else if (precision > 0 && !e) {
+    char * format;
+    size_t size = 2 + len_str_int(digits) + 1 + len_str_int(precision);
+    format = malloc(size + 1);
+    sprintf(format, "%%.%df", precision);
+    printf(format, value);
+  }else {
+    printf("%g", value);
   }
 }
 

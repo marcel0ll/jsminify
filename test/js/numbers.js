@@ -59,6 +59,10 @@ Javascript numbers can have "_" as separators
 Javascript numbers can also be of type BigInt with an "n" at the end
 Both of above notations do not work with old octal format -> 0{oct}
 
+Max {dec}, {oct}, {bin} number that is worth converting to {dec} is: 1099511627775;
+Min {dec}, {oct}, {bin} number that is worth converting to {hex} is: 1099511627776;
+This is due to the "0x" notation preceding hex numbers
+
 OBJECTIVE: REWRITE NUMBERS IN THE LEAST AMOUNT OF CHARACTERS
 
 */
@@ -147,3 +151,4 @@ OBJECTIVE: REWRITE NUMBERS IN THE LEAST AMOUNT OF CHARACTERS
 123e+07;
 123e-07;
 
+123.123
