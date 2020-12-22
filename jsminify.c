@@ -60,12 +60,6 @@ void node_text (TSNode node, struct visit_context * context) {
   printf("%s", ts_node_text(node, context));
 }
 
-bool starts_with(const char *pre, const char *str) {
-  size_t lenpre = strlen(pre),
-         lenstr = strlen(str);
-  return lenstr < lenpre ? false : memcmp(pre, str, lenpre) == 0;
-}
-
 int count_char_at_start(const char *str, const char *target) {
   size_t lenstr = strlen(str);
   int count = 0;
@@ -225,15 +219,17 @@ void node_number (TSNode node, struct visit_context * context) {
   int base = 10;
   int move = 2;
   int e = 0;
-  if (starts_with("0b", text) || starts_with("0B", text)) {
-    base = 2;
-  } else if (starts_with("0x", text) || starts_with("0X", text)) {
-    base = 16;
-  } else if (starts_with("0o", text) || starts_with("0O", text)) {
-    base = 8;
-  } else if (strstr(text, ".") == NULL && starts_with("0", text)) {
-    base = 8;
-    move = 1;
+  if (*text == '0') {
+    if (text[1] == 'b' || text[1] == 'B') {
+      base = 2;
+    } else if (text[1] == 'x' || text[1] == 'X') {
+      base = 16;
+    } else if (text[1] == 'o' || text[1] == 'O') {
+      base = 8;
+    } else if (strstr(text, ".") == NULL) {
+      base = 8;
+      move = 1;
+    }
   }
 
   if (base != 10) {
