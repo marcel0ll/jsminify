@@ -196,8 +196,13 @@ char *strremovedot0(char *str) {
       if ((s = strstr(str, "E")) == NULL)
         s = str + strlen(str);
     e = s--;
-    while((*s == '0' || *s == '.') && s > str) 
+    while((*s == '0' || *s == '.') && s > str) {
       s--;
+      if(*s == '.') {
+        s--;
+        break;
+      }
+    }
     s++;
     if (s < e)
       while((*s++ = *e++) != '\0')
