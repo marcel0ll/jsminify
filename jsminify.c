@@ -173,9 +173,9 @@ char *strreplace(char *str, const char *find, const char *replace) {
         }
       } 
 
-      e = r + replace_len;
+      e = r + replace_len + 1;
       c = (char *)replace;
-      while(c != NULL) {
+      while(*c != '\0') {
         *r++ = *c++;
       }
 
@@ -213,7 +213,8 @@ void node_number (TSNode node, struct visit_context * context) {
   text = strremovedot0(text);
 
   size_t text_len = strlen(text);
-  double value;
+  long long int integer = 0;
+  long long int fraction = 0;
   int precision = 0;
   int digits = 0;
   int base = 10;
@@ -233,33 +234,85 @@ void node_number (TSNode node, struct visit_context * context) {
   }
 
   if (base != 10) {
-    value = strtoll(&text[move], NULL, base);
-    if (value == 0L) {
-      value = strtoll(text, NULL, 10);
+    integer = strtoll(&text[move], NULL, base);
+    precision = 0;
+    if (integer == 0L) {
+      integer = strtoll(text, NULL, 10);
     }
+    digits = len_str_int(integer);
+    e = 0;
   } else {
-    precision = count_precision(text);
     digits = count_digits(text);
-    value = strtold(text, NULL);
-  } 
-
-  if (base != 16 && strstr(text, "e") != NULL) {
-    e = 1;
+    precision = count_precision(text);
+    char *p = text;
+    integer = strtoll(p, &p, 10);
+    if (strstr(text, ".") != NULL) {
+      fraction = strtoll(&p[1], &p, 10);
+    }
+    if (strstr(p, "e") != NULL) {
+      p = strreplace(p, "+0", "+");
+      p = strreplace(p, "-0", "-");
+      p++;
+      e = strtol(p, &p, 10);
+    }
   }
 
-  if (precision == 0 && !e) {
-    if (len_str_int(value) <= len_str_int_base(value, 16) + 2)
-      printf("%lld", (long long int)value);
+  if (len_str_int(fraction) < precision) {
+    e -= precision - len_str_int(fraction);
+    precision = len_str_int(fraction);
+  }
+
+  while (precision > 0) {
+    int d = pow(10, precision - 1);
+    int i = fraction / d;
+    fraction = fraction % d;
+
+    integer = integer * 10 + i;
+    digits = len_str_int(integer);
+    precision--;
+    e--;
+  }
+
+  while (integer % 10 == 0 && integer > 0) {
+    integer = integer / 10;
+    e++;
+  }
+
+  if (e > 0 && e <= 2) {
+    int d = pow(10, e);
+    integer = integer * d;
+    e -= e;
+  }
+
+  if (e < 0 && e >= -2) {
+    while(e < 0) {
+      int i = integer % 10;
+      integer = integer / 10;
+      precision++;
+      fraction = fraction + i * precision;
+      e++;
+    }
+  }
+
+  /* char * pe; */
+  /* if ((pe = strstr(text, "e")) != NULL) { */
+    /* e = strtoll(&pe[1], NULL, base); */
+  /* } */
+
+  if (fraction == 0 && !e) {
+    if (len_str_int(integer) <= len_str_int_base(integer, 16) + 2)
+      printf("%lld", integer);
     else
-      printf("0x%llx", (long long int)value);
-  } else if (precision > 0 && !e) {
-    char * format;
-    size_t size = 2 + len_str_int(digits) + 1 + len_str_int(precision);
-    format = malloc(size + 1);
-    sprintf(format, "%%.%df", precision);
-    printf(format, value);
-  }else {
-    printf("%g", value);
+      printf("0x%llx", integer);
+  } else {
+    if (integer != 0) 
+      printf("%lld", integer);
+    if (fraction > 0) 
+      printf(".%lld", fraction);
+    if (e != 0)
+      printf("e%d", e);
+
+    /* printf("\n%lld.%llde%d\n", integer, fraction, e); */
   }
 }
 
