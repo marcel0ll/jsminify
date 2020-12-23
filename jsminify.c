@@ -284,12 +284,12 @@ void node_number (TSNode node, struct visit_context * context) {
     e -= e;
   }
 
-  if (e < 0 && e >= -2) {
-    while(e < 0) {
+  if ((e < 0 && e >= -3) || (integer > 9 && e == -4 )) {
+    while(e < 0 && integer > 0) {
       int i = integer % 10;
       integer = integer / 10;
+      fraction = fraction + i * pow(10, precision);
       precision++;
-      fraction = fraction + i * precision;
       e++;
     }
   }

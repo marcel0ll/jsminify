@@ -122,6 +122,9 @@ OBJECTIVE: REWRITE NUMBERS IN THE LEAST AMOUNT OF CHARACTERS
 0.5;
 0.2456;
 
+// {dec}{dot}{fra}, that should stay as is 
+123.123
+
 // Any N, where it ends with at least 3 "0"s in Decimal should become S
 // is there a case where even with S notation is still better to write as {hex}?
 1000;
@@ -150,5 +153,3 @@ OBJECTIVE: REWRITE NUMBERS IN THE LEAST AMOUNT OF CHARACTERS
 // Any {exp} should lose starting "0"s
 123e+07;
 123e-07;
-
-123.123
