@@ -278,14 +278,19 @@ void node_number (TSNode node, struct visit_context * context) {
     e++;
   }
 
+  /* Up to here every  number is writen as {integer}e{exp} */
+  /* If {exp} is positive and less than 3 then rewrite as integer */
   if (e > 0 && e <= 2) {
     int d = pow(10, e);
     integer = integer * d;
-    e -= e;
+    e = 0;
   }
 
-  if ((e < 0 && e >= -3) || (integer > 9 && e == -4 )) {
-    while(e < 0 && integer > 0) {
+
+  int difelen = -e - len_str_int(integer);
+  /* printf("\ni:%lld l:%zu f:%lld l:%zu p:%d e:%d b:%d\n", integer, len_str_int(integer), fraction, len_str_int(fraction), precision, e, difelen); */
+  if (difelen < 3 && difelen >= 0) {
+    while(e < 0) {
       int i = integer % 10;
       integer = integer / 10;
       fraction = fraction + i * pow(10, precision);
@@ -293,11 +298,7 @@ void node_number (TSNode node, struct visit_context * context) {
       e++;
     }
   }
-
-  /* char * pe; */
-  /* if ((pe = strstr(text, "e")) != NULL) { */
-    /* e = strtoll(&pe[1], NULL, base); */
-  /* } */
+  /* printf("\ni:%lld l:%zu f:%lld l:%zu p:%d e:%d b:%d\n", integer, len_str_int(integer), fraction, len_str_int(fraction), precision, e, difelen); */
 
   if (fraction == 0 && !e) {
     if (len_str_int(integer) <= len_str_int_base(integer, 16) + 2)
@@ -307,8 +308,12 @@ void node_number (TSNode node, struct visit_context * context) {
   } else {
     if (integer != 0) 
       printf("%lld", integer);
-    if (fraction > 0) 
-      printf(".%lld", fraction);
+    if (fraction > 0) {
+      printf(".");
+      int zeroes = precision - len_str_int(fraction);
+      for(int z = 0; z < zeroes ; z++) printf("0");
+      printf("%lld", fraction);
+    }
     if (e != 0)
       printf("e%d", e);
 
