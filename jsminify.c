@@ -4,27 +4,28 @@
 #include <math.h>
 #include "../tree-sitter-visitor/tree-sitter-visitor.h"
 
-void node_keyword (TSNode node, char * text) {
+void node_keyword (TSNode node, struct visit_context * context) {
   printf("%s", ts_node_type(node));
 }
 
-void node_keyword_semi (TSNode node, char * text) {
+void node_keyword_semi (TSNode node, struct visit_context * context) {
   printf("%s;", ts_node_type(node));
 }
 
-void node_keyword_space (TSNode node, char * text) {
+void node_keyword_space (TSNode node, struct visit_context * context) {
   printf("%s ", ts_node_type(node));
 }
 
-void node_keyword_space_if_value (TSNode node, char * text) {
-  TSNode value = ts_node_child_by_field_name(node, "value", 5);
-  printf("%s", ts_node_type(node));
+void node_keyword_space_if_value (TSNode node, struct visit_context * context) {
+  char * type = ts_node_type(node);
+  while(*type != '_') printf("%c", *type++);
 
+  TSNode value = ts_node_child_by_field_name(node, "label", 5);
   if (!ts_node_is_null(value)) 
     printf(" ");
 }
 
-void node_spaced_keyword (TSNode node, char * text) {
+void node_spaced_keyword (TSNode node, struct visit_context * context) {
   printf(" %s ", ts_node_type(node));
 }
 
@@ -381,29 +382,33 @@ int main(int argc, char * argv[]) {
   context_add_multiple_visitors(context, class_types, node_class);
 
   const char * semi_types[] = { "expression_statement_out",
-    "variable_declaration_out", "lexical_declaration_out", "return_statement_out", "empty_statement",
-    "break_statement_out", "continue_statement_out", NULL};
+    "variable_declaration_out", "lexical_declaration_out",
+    "return_statement_out", "empty_statement", "break_statement_out",
+    "continue_statement_out", NULL};
   context_add_multiple_visitors(context, semi_types, node_semi);
 
-  const char * keyword_space_types[] = { "import", "export", "default", "const",
-    "new", "var", "let", "else", "case", "throw", "void",
-    "return", "delete", NULL};
+  const char * keyword_space_types[] = { "import", "export", "default",
+    "const", "new", "var", "let", "else", "case", "throw", "void", "return",
+    "delete", NULL};
   context_add_multiple_visitors(context, keyword_space_types, node_keyword_space);
 
-  const char * keyword_space_if_value_types[] = { "break", "continue", NULL };
-  context_add_multiple_visitors(context, keyword_space_if_value_types, node_keyword_space_if_value);
+  const char * keyword_space_if_value_types[] = { "break_statement",
+    "continue_statement", NULL }; 
+  context_add_multiple_visitors(context, keyword_space_if_value_types,
+      node_keyword_space_if_value);
 
   const char * spaced_keyword_types[] = { "in", "of", "as",
-    "instanceof","typeof", NULL };
-  context_add_multiple_visitors(context, spaced_keyword_types, node_spaced_keyword);
+    "instanceof","typeof", NULL }; 
+  context_add_multiple_visitors(context, spaced_keyword_types,
+      node_spaced_keyword);
 
-  const char * keyword_types[] = { "for", "do", "while", "this", "if", "switch",
-    "undefined", "null", "debugger", "get", "set", "yield", "eval", "!", "?", "%",
-    "*", "**", "++", "+", "--", "-", "~", ".", ":", "=", "==", "+=", "-=",
-    "*=", "/=", "&=", "|=", "<=", ">=", "!=", "===", "!==", ",",  "(",  ")",
-    "<",  ">",  "|",  "^",  "&",  ">>", ">>>", "<<", "[",  "]",  "{",  "}",
-    "||", "&&", "from", "true", "false", "try", "catch", "finally", "with",
-    "super", "extends", "/", NULL };
+  const char * keyword_types[] = { "for", "do", "while", "this", "if",
+    "switch", "undefined", "null", "debugger", "get", "set", "yield", "eval",
+    "!", "?", "%", "*", "**", "++", "+", "--", "-", "~", ".", ":", "=", "==",
+    "+=", "-=", "*=", "/=", "&=", "|=", "<=", ">=", "!=", "===", "!==", ",",
+    "(",  ")", "<",  ">",  "|",  "^",  "&",  ">>", ">>>", "<<", "[",  "]", "{",
+    "}", "||", "&&", "from", "true", "false", "try", "catch", "finally",
+    "with", "super", "extends", "/", NULL };
   context_add_multiple_visitors(context, keyword_types, node_keyword);
 
   visit_tree(root_node, context);
