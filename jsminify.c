@@ -268,18 +268,18 @@ void node_number (TSNode node, struct visit_context * context) {
   }
 
   while (precision > 0) {
-    int d = pow(10, precision - 1);
-    int i = fraction / d;
+    long long int d = pow(10, precision - 1);
+    long long int i = fraction / d;
     fraction = fraction % d;
 
-    integer = integer * 10 + i;
+    integer = integer * 10LL + i;
     digits = len_str_int(integer);
     precision--;
     e--;
   }
 
-  while (integer % 10 == 0 && integer > 0) {
-    integer = integer / 10;
+  while (integer % 10LL == 0 && integer > 0) {
+    integer = integer / 10LL;
     e++;
   }
 
