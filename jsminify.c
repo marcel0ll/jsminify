@@ -4,12 +4,11 @@
 #include <math.h>
 #include "../tree-sitter-visitor/tree-sitter-visitor.h"
 
+int DEBUG = 0;
+int BEAUTIFY = 0;
+
 void node_keyword (TSNode node, struct visit_context * context) {
   printf("%s", ts_node_type(node));
-}
-
-void node_keyword_semi (TSNode node, struct visit_context * context) {
-  printf("%s;", ts_node_type(node));
 }
 
 void node_keyword_space (TSNode node, struct visit_context * context) {
@@ -37,20 +36,17 @@ void node_class (TSNode node, struct visit_context * context) {
   class_counter = (class_counter + 1) % 2;
 }
 
-int function_counter = 0;
 void node_function (TSNode node, struct visit_context * context) {
-  if (function_counter) {
-    printf("function ");
-  }
-  function_counter = (function_counter + 1) % 2;
+  if(!ts_node_is_named(node)) return;
+  printf("function");
+
+  TSNode value = ts_node_child_by_field_name(node, "name", 4);
+  if (!ts_node_is_null(value)) 
+    printf(" ");
 }
 
 void node_identifier (TSNode node, struct visit_context * context) {
   printf("%s", ts_node_text(node, context));
-}
-
-void node_statement_block(TSNode node, struct visit_context * context) {
-  function_counter = 0;
 }
 
 void node_function_declaration (TSNode node, struct visit_context * context) {
@@ -332,15 +328,24 @@ void node_spaced_text (TSNode node, struct visit_context * context) {
 
 void node_semi (TSNode node, struct visit_context * context) {
   printf(";");
+  if (BEAUTIFY)
+    printf("\n");
 }
 
-int DEBUG = 0;
+void node_line_break (TSNode node, struct visit_context * context) {
+  if (BEAUTIFY)
+    printf("\n");
+}
+
 int main(int argc, char * argv[]) {
   int i;
   for (i = 0; i < argc; i++) {
     char * arg = argv[i];
     if (strcmp("-d", arg) == 0 || strcmp("--debug", arg) == 0) {
       DEBUG = 1;
+    }
+    if (strcmp("-b", arg) == 0 || strcmp("--beautify", arg) == 0) {
+      BEAUTIFY = 1;
     }
   }
   char * file_path = argv[argc - 1];
@@ -375,8 +380,9 @@ int main(int argc, char * argv[]) {
   context_add_visitor(context, visitor_new("property_identifier", node_text));
   context_add_visitor(context, visitor_new("function_declaration", node_function_declaration));
   context_add_visitor(context, visitor_new("function", node_function));
-  context_add_visitor(context, visitor_new("statement_block", node_statement_block));
   context_add_visitor(context, visitor_new("unary_expression", node_space));
+  context_add_visitor(context, visitor_new("update_expression", node_space));
+  context_add_visitor(context, visitor_new("statement_block", node_line_break));
 
   const char * class_types[] = {"class_declaration", "class", NULL};
   context_add_multiple_visitors(context, class_types, node_class);
@@ -384,7 +390,7 @@ int main(int argc, char * argv[]) {
   const char * semi_types[] = { "expression_statement_out",
     "variable_declaration_out", "lexical_declaration_out",
     "return_statement_out", "empty_statement", "break_statement_out",
-    "continue_statement_out", "throw_statement_out", NULL};
+    "continue_statement_out", "throw_statement_out", "do_statement_out", NULL};
   context_add_multiple_visitors(context, semi_types, node_semi);
 
   const char * keyword_space_types[] = { "import", "export", "default",
