@@ -256,7 +256,7 @@ void node_number (TSNode node, struct visit_context * context) {
     if (strstr(text, ".") != NULL) {
       fraction = strtoll(&p[1], &p, 10);
     }
-    if (strstr(p, "e") != NULL) {
+    if (strstr(p, "e") != NULL || strstr(p, "E") != NULL) {
       p = strreplace(p, "+0", "+");
       p = strreplace(p, "-0", "-");
       p++;
