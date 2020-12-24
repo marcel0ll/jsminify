@@ -384,7 +384,7 @@ int main(int argc, char * argv[]) {
   const char * semi_types[] = { "expression_statement_out",
     "variable_declaration_out", "lexical_declaration_out",
     "return_statement_out", "empty_statement", "break_statement_out",
-    "continue_statement_out", NULL};
+    "continue_statement_out", "throw_statement_out", NULL};
   context_add_multiple_visitors(context, semi_types, node_semi);
 
   const char * keyword_space_types[] = { "import", "export", "default",
