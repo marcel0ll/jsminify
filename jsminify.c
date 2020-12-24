@@ -61,6 +61,10 @@ void node_text (TSNode node, struct visit_context * context) {
   printf("%s", ts_node_text(node, context));
 }
 
+void node_space (TSNode node, struct visit_context * context) {
+  printf(" ");
+}
+
 int count_char_at_start(const char *str, const char *target) {
   size_t lenstr = strlen(str);
   int count = 0;
@@ -372,6 +376,7 @@ int main(int argc, char * argv[]) {
   context_add_visitor(context, visitor_new("function_declaration", node_function_declaration));
   context_add_visitor(context, visitor_new("function", node_function));
   context_add_visitor(context, visitor_new("statement_block", node_statement_block));
+  context_add_visitor(context, visitor_new("unary_expression", node_space));
 
   const char * class_types[] = {"class_declaration", "class", NULL};
   context_add_multiple_visitors(context, class_types, node_class);
