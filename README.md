@@ -27,7 +27,7 @@ General tasks related to this library
 - [ ] Test on Win
 - [ ] Test on Mac
 - [ ] Write tests
-- [ ] Check if this can be used as a npm module somehow with bindings (no idea how this work)
+- [x] Bind jsminify as a npm package using node-gyp
 - [x] Time this tool and compare against other tools (uglifyjs? minifyjs?)
 
 ### Minification
@@ -39,7 +39,9 @@ Tasks related to optimzations that can be done to the code without problems.
 - [x] Remove " " after continue. ex.: `continue ;`
 
 - [x] Convert numbers to the least amount of characters(0xff -> 255)
-  * [ ] improve scientific notation (there are a few cases which need improv.)
+  * [ ] improve scientific notation (there are a few cases which need improv.) (check math.js minification)
+
+- [ ] Improve decimal digits precision printing: ECMA-256 only requires up to 21 digits. Chrome apparently crops at 16. So: 0.89081309152928522810 becomes 0.8908130915292852
 
 ### Compression
 - [ ] Transform scoped parameters identifiers in shorter versions. ex.: `function(foo){foo()}` => `function(a){a()}`
