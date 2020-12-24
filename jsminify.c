@@ -389,7 +389,7 @@ int main(int argc, char * argv[]) {
 
   const char * keyword_space_types[] = { "import", "export", "default",
     "const", "new", "var", "let", "else", "case", "throw", "void", "return",
-    "delete", NULL};
+    "do", "delete", NULL};
   context_add_multiple_visitors(context, keyword_space_types, node_keyword_space);
 
   const char * keyword_space_if_value_types[] = { "break_statement",
@@ -402,13 +402,14 @@ int main(int argc, char * argv[]) {
   context_add_multiple_visitors(context, spaced_keyword_types,
       node_spaced_keyword);
 
-  const char * keyword_types[] = { "for", "do", "while", "this", "if",
-    "switch", "undefined", "null", "debugger", "get", "set", "yield", "eval",
-    "!", "?", "%", "*", "**", "++", "+", "--", "-", "~", ".", ":", "=", "==",
-    "+=", "-=", "*=", "/=", "&=", "|=", "<=", ">=", "!=", "===", "!==", ",",
-    "(",  ")", "<",  ">",  "|",  "^",  "&",  ">>", ">>>", "<<", "[",  "]", "{",
-    "}", "||", "&&", "from", "true", "false", "try", "catch", "finally",
-    "with", "super", "extends", "/", NULL };
+  const char * keyword_types[] = { "for", "while", "this", "if", "switch",
+    "undefined", "null", "debugger", "get", "set", "yield", "eval", ".", "?",
+    ":", "!", "==", "!=", "===", "!==", ">", ">=", "<", "<=", "++", "--", "=",
+    "+", "-", "*", "/", "%", "**", "<<", ">>", ">>>", "&", "^", "|", "&&",
+    "||", "??", "+=", "-=", "*=", "/=", "%=", "<<=", ">>=", ">>>=", "&=", "^=",
+    "|=", "&&=", "||=", "??=", "~", ",", "(", ")", "[", "]", "{", "}", "from",
+    "true", "false", "try", "catch", "finally", "with", "super", "extends",
+    NULL };
   context_add_multiple_visitors(context, keyword_types, node_keyword);
 
   visit_tree(root_node, context);
