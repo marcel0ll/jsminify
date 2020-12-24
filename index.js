@@ -1,4 +1,3 @@
-var binding = require('node-gyp-build')(__dirname);
+module.exports = require("./build/Release/tree_sitter_javascript_binding");
 
-module.exports = binding.jsminify;
 
