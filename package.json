@@ -1,0 +1,27 @@
+{
+  "name": "jsminify",
+  "version": "0.0.1",
+  "description": "A javascript minifier built on top of a tree-sitter parser",
+  "main": "index.js",
+  "dependencies": {
+    "node-addon-api": "^3.1.0",
+    "node-gyp-build": "^4.2.3"
+  },
+  "devDependencies": {
+    "prebuildify": "^4.1.1"
+  },
+  "scripts": {
+    "install": "node-gyp-build",
+    "prebuild": "prebuildify --napi"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/marcel0ll/jsminify.git"
+  },
+  "author": "Marcelo L. Lotufo (@marcel0ll)",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/marcel0ll/jsminify/issues"
+  },
+  "homepage": "https://github.com/marcel0ll/jsminify"
+}

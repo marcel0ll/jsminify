@@ -2,6 +2,7 @@
 #include <stdio.h>
 #include <tree_sitter/api.h>
 #include <math.h>
+#include <node_api.h>
 #include "../tree-sitter-visitor/tree-sitter-visitor.h"
 
 int DEBUG = 0;
@@ -291,7 +292,7 @@ void node_number (TSNode node, struct visit_context * context) {
   }
 
   int difelen = -e - len_str_int(integer);
-  if (difelen < 3 && difelen >= -3) {
+  if (difelen < 3 && difelen >= -7) {
     while(e < 0) {
       long long int i = integer % 10;
       integer = integer / 10;
@@ -337,21 +338,21 @@ void node_line_break (TSNode node, struct visit_context * context) {
     printf("\n");
 }
 
-int main(int argc, char * argv[]) {
+void parse_file(int argc, char * argv[]) {
   int i;
-  for (i = 0; i < argc; i++) {
-    char * arg = argv[i];
-    if (strcmp("-d", arg) == 0 || strcmp("--debug", arg) == 0) {
-      DEBUG = 1;
-    }
-    if (strcmp("-b", arg) == 0 || strcmp("--beautify", arg) == 0) {
-      BEAUTIFY = 1;
-    }
-  }
-  char * file_path = argv[argc - 1];
+  /* for (i = 0; i < argc; i++) { */
+    /* char * arg = argv[i]; */
+    /* if (strcmp("-d", arg) == 0 || strcmp("--debug", arg) == 0) { */
+      /* DEBUG = 1; */
+    /* } */
+    /* if (strcmp("-b", arg) == 0 || strcmp("--beautify", arg) == 0) { */
+      /* BEAUTIFY = 1; */
+    /* } */
+  /* } */
+  char * file_path = argv;
   if (file_path == NULL) {
     printf("No file passed...\n");
-    return 1;
+    return;
   }
   TSLanguage *tree_sitter_javascript();
   TSParser *parser = ts_parser_new();
@@ -424,6 +425,39 @@ int main(int argc, char * argv[]) {
   context_delete(context);
   ts_tree_delete(tree);
   ts_parser_delete(parser);
-  return 0;
+  return;
 }
 
+
+napi_value jsminify (napi_env env, napi_callback_info info) {
+  napi_value argv[1];
+  size_t argc = 1;
+
+  napi_get_cb_info(env, info, &argc, argv, NULL, NULL);
+
+  if (argc < 1) {
+    napi_throw_error(env, "EINVAL", "Too few arguments");
+    return NULL;
+  }
+
+  char str[1024];
+  size_t str_len;
+
+  if (napi_get_value_string_utf8(env, argv[0], (char *) &str, 1024, &str_len) != napi_ok) {
+    napi_throw_error(env, "EINVAL", "Expected string");
+    return NULL;
+  }
+
+  parse_file(argc, str);
+
+  return NULL;
+}
+
+napi_value init_all (napi_env env, napi_value exports) {
+  napi_value jsminify_fn;
+  napi_create_function(env, NULL, 0, jsminify, NULL, &jsminify_fn);
+  napi_set_named_property(env, exports, "jsminify", jsminify_fn);
+  return exports;
+}
+
+NAPI_MODULE(NODE_GYP_MODULE_NAME, init_all)
