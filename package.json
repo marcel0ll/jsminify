@@ -1,6 +1,6 @@
 {
   "name": "jsminify",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "A javascript minifier built on top of a tree-sitter parser",
   "main": "index.js",
   "dependencies": {
@@ -23,5 +23,8 @@
   "bugs": {
     "url": "https://github.com/marcel0ll/jsminify/issues"
   },
-  "homepage": "https://github.com/marcel0ll/jsminify"
+  "homepage": "https://github.com/marcel0ll/jsminify",
+  "bin": {
+    "jsminify": "./jsminify"
+  }
 }
