@@ -18,7 +18,8 @@ minified.
 
 General tasks related to this library
 
-- [ ] Write about and publish this
+- [ ] Write about this
+- [x] publish on npm 
 - [ ] C related:
   * [ ] include tree-sitter-visitor.a ?
   * [ ] check memory allocation/deallocation
