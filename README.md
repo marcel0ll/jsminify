@@ -1,9 +1,9 @@
 # jsminify
 
-"jsminfy" is a JS minifier written in C. It uses an extended 
-tree-sitter-javascript grammar to create a parser and uses tree-sitter-visitor
-to visit each node of a JavaScript AST. For each visited node it is generated
-javascript code that is minified.
+"jsminfy" is a JS minifier written in C. It uses tree-sitter-javascript grammar
+to create a parser and uses tree-sitter-visitor to visit each node of a
+JavaScript AST. For each visited node it is generated javascript code that is
+minified.
 
 ## Dependencies
 
@@ -18,38 +18,55 @@ javascript code that is minified.
 
 General tasks related to this library
 
-- [ ] include tree-sitter-visitor.a
+- [ ] Write about and publish this
+- [ ] C related:
+  * [ ] include tree-sitter-visitor.a ?
+  * [ ] check memory allocation/deallocation
+  * [ ] are the "includes" done right?
+  * [x] DEBUG flag 
 - [ ] Test on Win
 - [ ] Test on Mac
 - [ ] Write tests
-- [ ] Time this tool and compare against other tools (uglifyjs? minifyjs?)
 - [ ] Check if this can be used as a npm module somehow with bindings (no idea how this work)
-- [ ] Improve code
-  * [ ] DEBUG flag
-  * [ ] check memory allocation/disallocation
-  * [ ] are the "includes" done right?
-  * [ ] better string formatting library
+- [x] Time this tool and compare against other tools (uglifyjs? minifyjs?)
 
 ### Minification
 
 Tasks related to optimzations that can be done to the code without problems.
 
-- [ ] Remove " " after anonymous function. ex.: `var a = function (){}`
-- [ ] Remove " " after break. ex.: `break ;`
-- [ ] Remove " " after continue. ex.: `continue ;`
+- [x] Remove " " after anonymous function. ex.: `var a = function (){}`
+- [x] Remove " " after break. ex.: `break ;`
+- [x] Remove " " after continue. ex.: `continue ;`
 
-- [ ] Remove unnecessary ";" on last block statement
-- [ ] Convert numbers to the least amount of characters(0xff -> 255)
-  * [ ] improve scientific notation 
+- [x] Convert numbers to the least amount of characters(0xff -> 255)
+  * [ ] improve scientific notation (there are a few cases which need improv.)
 
 ### Compression
 - [ ] Transform scoped parameters identifiers in shorter versions. ex.: `function(foo){foo()}` => `function(a){a()}`
+- [ ] Remove unnecessary ";" on last statement in a block statement
+ 
+### Beautify
+- [x] Beautify flag
+- [ ] Ensure beatiful output
 
 ## How I tested this (for now)
 
-I used jsminify to minify "particle.js" and "phaser.js" then I used prettier
-to beautify the code and diffed the files against the same files minified by 
-Uglifyjs and beautified by prettier again.
+I used jsminify to minify:
 
-The diff shows what other minifications are done by uglifyjs that could be 
-implemented by jsminify.
+- angular.js
+- bootstrap.js
+- d3.js
+- ember.prod.js
+- htmlminifier.js
+- jquery-3.4.1.js
+- lodash.js
+- math.js
+- phaser.js
+- react.js
+- particles.js
+
+then I used prettier to beautify the code and diffed the files against the same
+process done by Uglifyjs.
+
+The diffs shows what other minifications are done by uglifyjs that could be 
+implemented by jsminify, missing minificaiton opportunities and bugs.
