@@ -2,6 +2,14 @@
   "name": "@lotuz/jsminify",
   "version": "0.0.4",
   "description": "A javascript minifier built on top of a tree-sitter parser",
+  "keywords": [
+    "javascript",
+    "minifier",
+    "c",
+    "node-addon",
+    "tree-sitter"
+  ],
+  "license": "MIT",
   "main": "index.js",
   "dependencies": {
     "node-addon-api": "^3.1.0",
