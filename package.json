@@ -1,6 +1,6 @@
 {
   "name": "@lotuz/jsminify",
-  "version": "0.0.4",
+  "version": "0.0.5",
   "description": "A javascript minifier built on top of a tree-sitter parser",
   "keywords": [
     "javascript",
@@ -33,6 +33,6 @@
   },
   "homepage": "https://github.com/marcel0ll/jsminify",
   "bin": {
-    "jsminify": "./jsminify"
+    "jsminify": "./build/Release/jsminify.node"
   }
 }
