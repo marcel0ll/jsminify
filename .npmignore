@@ -1,7 +1,7 @@
 jsminify
-node_modules/
-comp/
-res/
-build/
+node_modules
+comp
+res
+build
 test.sh
-test/
+test
