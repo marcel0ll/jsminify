@@ -5,7 +5,7 @@
 #include <node_api.h>
 #include "../tree-sitter-visitor/tree-sitter-visitor.h"
 
-int DEBUG = 0;
+int debug = 0;
 int BEAUTIFY = 0;
 
 void node_keyword (TSNode node, struct visit_context * context) {
@@ -17,7 +17,8 @@ void node_keyword_space (TSNode node, struct visit_context * context) {
 }
 
 void node_keyword_space_if_value (TSNode node, struct visit_context * context) {
-  char * type = ts_node_type(node);
+  const char * type = ts_node_type(node);
+  // hack to print break from break_statement (same for continue)
   while(*type != '_') printf("%c", *type++);
 
   TSNode value = ts_node_child_by_field_name(node, "label", 5);
@@ -65,7 +66,7 @@ void node_space (TSNode node, struct visit_context * context) {
 int count_char_at_start(const char *str, const char *target) {
   size_t lenstr = strlen(str);
   int count = 0;
-  char * c = str;
+  const char * c = str;
 
   while (memcmp(c, target, 1) == 0 && c < &str[lenstr - 1]) {
     count++;
@@ -78,7 +79,7 @@ int count_char_at_start(const char *str, const char *target) {
 int count_char_at_end(const char *str, const char *target) {
   size_t lenstr = strlen(str);
   int count = 0;
-  char * c = &str[lenstr - 1];
+  const char * c = &str[lenstr - 1];
 
   while (memcmp(c, target, 1) == 0 && c > str) {
     count++;
@@ -125,20 +126,6 @@ char *strremove(char *str, const char *find, int ignore) {
             continue;
     }
     return str;
-}
-
-size_t count_digits(const char *str) {
-  char * s;
-  size_t count = 0;
-  if ((s = strstr(str, ".")) == NULL) {
-    count = strlen(str);
-  } else {
-    char *p = str;
-    while(p++ < s)
-      count++;
-  }
-
-  return count;
 }
 
 size_t count_precision(const char *str) {
@@ -219,11 +206,9 @@ void node_number (TSNode node, struct visit_context * context) {
   // remove non relevant right 0
   text = strremovedot0(text);
 
-  size_t text_len = strlen(text);
   long long int integer = 0;
   long long int fraction = 0;
   int precision = 0;
-  int digits = 0;
   int base = 10;
   int move = 2;
   int e = 0;
@@ -246,10 +231,8 @@ void node_number (TSNode node, struct visit_context * context) {
     if (integer == 0L) {
       integer = strtoll(text, NULL, 10);
     }
-    digits = len_str_int(integer);
     e = 0;
   } else {
-    digits = count_digits(text);
     precision = count_precision(text);
     char *p = text;
     integer = strtoll(p, &p, 10);
@@ -264,7 +247,7 @@ void node_number (TSNode node, struct visit_context * context) {
     }
   }
 
-  if (integer == 0 && len_str_int(fraction) < precision) {
+  if (integer == 0 && (int) len_str_int(fraction) < precision) {
     e -= precision - len_str_int(fraction);
     precision = len_str_int(fraction);
   }
@@ -275,7 +258,6 @@ void node_number (TSNode node, struct visit_context * context) {
     fraction = fraction % d;
 
     integer = integer * 10LL + i;
-    digits = len_str_int(integer);
     precision--;
     e--;
   }
@@ -340,16 +322,16 @@ void node_line_break (TSNode node, struct visit_context * context) {
 
 void parse_file(int argc, char * argv[]) {
   int i;
-  /* for (i = 0; i < argc; i++) { */
-    /* char * arg = argv[i]; */
-    /* if (strcmp("-d", arg) == 0 || strcmp("--debug", arg) == 0) { */
-      /* DEBUG = 1; */
-    /* } */
-    /* if (strcmp("-b", arg) == 0 || strcmp("--beautify", arg) == 0) { */
-      /* BEAUTIFY = 1; */
-    /* } */
-  /* } */
-  char * file_path = argv;
+  for (i = 0; i < argc; i++) {
+    char * arg = argv[i];
+    if (strcmp("-d", arg) == 0 || strcmp("--debug", arg) == 0) {
+      debug = 1;
+    }
+    if (strcmp("-b", arg) == 0 || strcmp("--beautify", arg) == 0) {
+      BEAUTIFY = 1;
+    }
+  }
+  char * file_path = argv[argc - 1];
   if (file_path == NULL) {
     printf("No file passed...\n");
     return;
@@ -369,7 +351,7 @@ void parse_file(int argc, char * argv[]) {
 
   TSNode root_node = ts_tree_root_node(tree);
 
-  struct visit_context *context = context_new(source_code, DEBUG);
+  struct visit_context *context = context_new(source_code, debug);
 
   context_add_visitor(context, visitor_new("identifier", node_identifier));
 
@@ -379,6 +361,7 @@ void parse_file(int argc, char * argv[]) {
   context_add_visitor(context, visitor_new("number", node_number));
   context_add_visitor(context, visitor_new("statement_identifier", node_text));
   context_add_visitor(context, visitor_new("property_identifier", node_text));
+  context_add_visitor(context, visitor_new("shorthand_property_identifier", node_text));
   context_add_visitor(context, visitor_new("function_declaration", node_function_declaration));
   context_add_visitor(context, visitor_new("function", node_function));
   context_add_visitor(context, visitor_new("unary_expression", node_space));
@@ -414,7 +397,7 @@ void parse_file(int argc, char * argv[]) {
     ":", "!", "==", "!=", "===", "!==", ">", ">=", "<", "<=", "++", "--", "=",
     "+", "-", "*", "/", "%", "**", "<<", ">>", ">>>", "&", "^", "|", "&&",
     "||", "??", "+=", "-=", "*=", "/=", "%=", "<<=", ">>=", ">>>=", "&=", "^=",
-    "|=", "&&=", "||=", "??=", "~", ",", "(", ")", "[", "]", "{", "}", "from",
+    "|=", "&&=", "||=", "\?\?=", "~", ",", "(", ")", "[", "]", "{", "}", "from",
     "true", "false", "try", "catch", "finally", "with", "super", "extends",
     NULL };
   context_add_multiple_visitors(context, keyword_types, node_keyword);
@@ -429,26 +412,33 @@ void parse_file(int argc, char * argv[]) {
 }
 
 
-napi_value jsminify (napi_env env, napi_callback_info info) {
-  napi_value argv[1];
-  size_t argc = 1;
+napi_value jsminify (napi_env env, napi_callback_info cbinfo) {
+  napi_status status;
+  // Get arguments length
+  size_t argc;
+  status = napi_get_cb_info(env, cbinfo, &argc, NULL, NULL, NULL);
 
-  napi_get_cb_info(env, info, &argc, argv, NULL, NULL);
+  // Get array of arguments
+  napi_value *argv = (napi_value *) malloc(argc * sizeof(uintptr_t));
+  status = napi_get_cb_info(env, cbinfo, &argc, argv, NULL, NULL);
+
+  char * args[argc];
+  size_t str_len = 1024;
+  for (size_t i = 0; i < argc; i++) {
+    args[i] = malloc(str_len);
+    if(napi_get_value_string_utf8(env, argv[i], (char *) args[i], 1024, &str_len) != napi_ok) {
+      napi_throw_error(env, "EINVAL", "Expected string");
+      return NULL;
+    }
+    printf("%s\n", args[i]);
+  }
 
   if (argc < 1) {
     napi_throw_error(env, "EINVAL", "Too few arguments");
     return NULL;
   }
 
-  char str[1024];
-  size_t str_len;
-
-  if (napi_get_value_string_utf8(env, argv[0], (char *) &str, 1024, &str_len) != napi_ok) {
-    napi_throw_error(env, "EINVAL", "Expected string");
-    return NULL;
-  }
-
-  parse_file(argc, str);
+  parse_file(argc, args);
 
   return NULL;
 }
