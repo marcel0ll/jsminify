@@ -2,6 +2,5 @@ jsminify
 node_modules
 comp
 res
-build
 test.sh
 test

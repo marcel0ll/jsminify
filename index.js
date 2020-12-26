@@ -1,3 +1,4 @@
+#!/usr/bin/env node
 const {jsminify} = require('node-gyp-build')(__dirname);
 
 module.exports = jsminify;

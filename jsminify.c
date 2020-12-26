@@ -430,7 +430,6 @@ napi_value jsminify (napi_env env, napi_callback_info cbinfo) {
       napi_throw_error(env, "EINVAL", "Expected string");
       return NULL;
     }
-    printf("%s\n", args[i]);
   }
 
   if (argc < 1) {
