@@ -5,8 +5,11 @@ There are 3 folders for tests:
 * min: For minified files
 * out: For console outputs
 
-The test suite for jsminify simply minifies files in js/ then compares same
-filename to /min. If testsuite is set to execute, then it executes files in
-/min and compares output with /out files.
+There are 4 bash files for tests:
+* debug.sh: Outputs debug texts
+* test-cmp.sh: Downloads and compares this library with uglifyjs
+* test-min.sh: Minfies and compares minified files with /min
+* test-out.sh: Minifies and executes files comparing log with /out
 
-Files in js/ can have hashbang options used to configure the execution.
+(WIP)Files in js/ can have hashbang options used to configure the execution.
+
