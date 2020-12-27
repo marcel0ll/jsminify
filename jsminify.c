@@ -30,12 +30,9 @@ void node_spaced_keyword (TSNode node, struct visit_context * context) {
   printf(" %s ", ts_node_type(node));
 }
 
-int class_counter = 0;
 void node_class (TSNode node, struct visit_context * context) {
-  if (class_counter) {
+  if(!ts_node_is_named(node)) return;
     printf("class ");
-  }
-  class_counter = (class_counter + 1) % 2;
 }
 
 void node_function (TSNode node, struct visit_context * context) {
