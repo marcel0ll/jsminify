@@ -45,7 +45,20 @@ void node_function (TSNode node, struct visit_context * context) {
 }
 
 void node_identifier (TSNode node, struct visit_context * context) {
+  TSNode parent = ts_node_parent(node);
+  if (strcmp(ts_node_type(parent), "import_clause") == 0) {
+    printf(" ");
+  }
+
   printf("%s", ts_node_text(node, context));
+
+  TSNode next_sibling = ts_node_next_sibling(node);
+  if (ts_node_is_null(next_sibling) || (!ts_node_is_null(next_sibling) &&
+        strcmp(ts_node_type(next_sibling), ",") != 0)) { 
+    TSNode next_parent_sibling = ts_node_next_sibling(parent);
+    if(!ts_node_is_null(next_parent_sibling) && strcmp(ts_node_type(next_parent_sibling), "from") == 0) 
+      printf(" "); 
+  }
 }
 
 void node_function_declaration (TSNode node, struct visit_context * context) {
@@ -371,12 +384,13 @@ void parse_file(int argc, char * argv[]) {
   const char * semi_types[] = { "expression_statement_out",
     "variable_declaration_out", "lexical_declaration_out",
     "return_statement_out", "empty_statement", "break_statement_out",
-    "continue_statement_out", "throw_statement_out", "do_statement_out", NULL};
+    "continue_statement_out", "throw_statement_out", "do_statement_out",
+    "import_statement_out", NULL};
   context_add_multiple_visitors(context, semi_types, node_semi);
 
-  const char * keyword_space_types[] = { "import", "export", "default",
-    "const", "new", "var", "let", "else", "case", "throw", "void", "return",
-    "do", "delete", "get", "set", NULL};
+  const char * keyword_space_types[] = {  "export", "default", "const", "new",
+    "var", "let", "else", "case", "throw", "void", "return", "do", "delete",
+    "get", "set", NULL};
   context_add_multiple_visitors(context, keyword_space_types, node_keyword_space);
 
   const char * keyword_space_if_value_types[] = { "break_statement",
@@ -389,12 +403,12 @@ void parse_file(int argc, char * argv[]) {
   context_add_multiple_visitors(context, spaced_keyword_types,
       node_spaced_keyword);
 
-  const char * keyword_types[] = { "for", "while", "this", "if", "switch",
-    "undefined", "null", "debugger", "yield", "eval", ".", "?",
-    ":", "!", "==", "!=", "===", "!==", ">", ">=", "<", "<=", "++", "--", "=",
-    "+", "-", "*", "/", "%", "**", "<<", ">>", ">>>", "&", "^", "|", "&&",
-    "||", "??", "+=", "-=", "*=", "/=", "%=", "<<=", ">>=", ">>>=", "&=", "^=",
-    "|=", "&&=", "||=", "\?\?=", "~", ",", "(", ")", "[", "]", "{", "}", "from",
+  const char * keyword_types[] = { "import", "for", "while", "this", "if",
+    "switch", "undefined", "null", "debugger", "yield", "eval", ".", "?", ":",
+    "!", "==", "!=", "===", "!==", ">", ">=", "<", "<=", "++", "--", "=", "+",
+    "-", "*", "/", "%", "**", "<<", ">>", ">>>", "&", "^", "|", "&&", "||",
+    "??", "+=", "-=", "*=", "/=", "%=", "<<=", ">>=", ">>>=", "&=", "^=", "|=",
+    "&&=", "||=", "\?\?=", "~", ",", "(", ")", "[", "]", "{", "}", "from",
     "true", "false", "try", "catch", "finally", "with", "super", "extends",
     NULL };
   context_add_multiple_visitors(context, keyword_types, node_keyword);
