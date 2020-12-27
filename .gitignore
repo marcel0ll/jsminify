@@ -3,3 +3,4 @@ node_modules/
 comp/
 res/
 build/
+test/tmp/
