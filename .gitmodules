@@ -1,0 +1,12 @@
+[submodule "libs/tree-sitter-visitor"]
+	path = libs/tree-sitter-visitor
+	url = https://github.com/marcel0ll/tree-sitter-visitor.git
+[submodule "libs/tree-sitter"]
+	path = libs/tree-sitter
+	url = https://github.com/tree-sitter/tree-sitter.git
+[submodule "libs/hashmap.c"]
+	path = libs/hashmap.c
+	url = https://github.com/tidwall/hashmap.c.git
+[submodule "libs/tree-sitter-javascript"]
+	path = libs/tree-sitter-javascript
+	url = https://github.com/tree-sitter/tree-sitter-javascript.git
