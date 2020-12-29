@@ -13,7 +13,11 @@
       "../../tree-sitter/libtree-sitter.a",
     ],
     "include_dirs": [
+      "<!@(node -p \"require('node-addon-api').include\")",
       "../tree-sitter/lib/include",
+    ],
+    "dependencies": [
+      "<!(node -p \"require('node-addon-api').gyp\")"
     ],
     "cflags_c": [
       "-std=c99"

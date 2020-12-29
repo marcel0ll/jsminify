@@ -1,7 +1,7 @@
 {
   "name": "@lotuz/jsminify",
-  "version": "0.0.8",
-  "description": "A javascript minifier built on top of a tree-sitter parser",
+  "version": "0.0.9",
+  "description": "A javascript minifier built on top of a tree-sitter parser in C",
   "keywords": [
     "javascript",
     "minifier",
@@ -16,6 +16,7 @@
     "node-gyp-build": "^4.2.3"
   },
   "devDependencies": {
+    "node-gyp": "^7.1.2",
     "prebuildify": "^4.1.1"
   },
   "scripts": {
