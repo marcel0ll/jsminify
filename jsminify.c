@@ -1,8 +1,8 @@
 #include <string.h>
 #include <stdio.h>
-#include <tree_sitter/api.h>
 #include <math.h>
 #include <node_api.h>
+#include <tree_sitter/api.h>
 #include "libs/tree-sitter-visitor/tree-sitter-visitor.h"
 
 int debug = 0;
