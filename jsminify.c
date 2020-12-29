@@ -3,7 +3,7 @@
 #include <tree_sitter/api.h>
 #include <math.h>
 #include <node_api.h>
-#include "../tree-sitter-visitor/tree-sitter-visitor.h"
+#include "libs/tree-sitter-visitor/tree-sitter-visitor.h"
 
 int debug = 0;
 int BEAUTIFY = 0;
