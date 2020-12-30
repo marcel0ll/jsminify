@@ -4,3 +4,7 @@ comp
 res
 test.sh
 test
+libs/
+.travis.yml
+appveyor.yml
+build/
