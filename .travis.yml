@@ -22,6 +22,7 @@ before_deploy:
 - tar --create --verbose --file="$ARCHIVE_NAME" --directory "$TRAVIS_BUILD_DIR/prebuilds"
   .
 deploy:
+  github_token: $GITHUB_TOKEN
   provider: releases
   draft: false
   prerelease: true
