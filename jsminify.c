@@ -424,14 +424,13 @@ void parse_file(int argc, char * argv[]) {
 
 
 napi_value jsminify (napi_env env, napi_callback_info cbinfo) {
-  napi_status status;
   // Get arguments length
   size_t argc;
-  status = napi_get_cb_info(env, cbinfo, &argc, NULL, NULL, NULL);
+  napi_get_cb_info(env, cbinfo, &argc, NULL, NULL, NULL);
 
   // Get array of arguments
   napi_value *argv = (napi_value *) malloc(argc * sizeof(uintptr_t));
-  status = napi_get_cb_info(env, cbinfo, &argc, argv, NULL, NULL);
+  napi_get_cb_info(env, cbinfo, &argc, argv, NULL, NULL);
 
   char * args[argc];
   size_t str_len = 1024;
