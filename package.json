@@ -21,7 +21,7 @@
   },
   "scripts": {
     "install": "node-gyp-build",
-    "prebuild": "prebuildify --napi",
+    "prebuild": "prebuildify --napi --quiet",
     "test": "echo 'tested'"
   },
   "repository": {
