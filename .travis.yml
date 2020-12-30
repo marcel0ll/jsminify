@@ -22,8 +22,6 @@ before_deploy:
 - tar --create --verbose --file="$ARCHIVE_NAME" --directory "$TRAVIS_BUILD_DIR/prebuilds"
   .
 deploy:
-  token: $GITHUB_TOKEN
-  GITHUB_TOKEN: $GITHUB_TOKEN
   provider: releases
   draft: false
   prerelease: true
@@ -32,3 +30,6 @@ deploy:
   on:
     tags: true
     node: node
+env:
+  global:
+    secure: nAxaFNxRAVisrkN2q2iuEiC2oLfJglJrzd5fXwePQPyVGqia1I6W1EdsdGP3JWo98yVkIKo9JpvGkknb4oy/FGHzfCLKO5tjpluGYDRe+jvQvciNodi1pBYyXqeRgFTnt3bhLwMSfNaj8UFZfmscVUaGrCYcn2qWEESIZu4Zekqi6PeA/wwX/nFyf7EswwBiv2G4gm1YJoKJKOGJ455HIxkYy2QiEd26605hcjBDGM5/pYZKwM8d+LGb8Sgw3ibRfDGodDB3n/A9+ZcrT9EkdPC391zyIhootb3cKTOe6ZIwZ7G9YJ0d2qn08JfEWtVg1as270nii+5JvbIe9N7BUA8FCWtDypbLVTEuUF8D7bxXHP25licwttOdw5T6yn31EAczUPhPXh5hGrtZsxij8Mldg7n/vNA5T2OKSSXKCSugrFP0bFUAP45ogU5/O14x4ykg7pRgPeBSUzq68O63oUQcmECK6TyER2d+y/NYY/k9z3BmLe07hNSIOE05YbFrxDqGnrZ0tdpe3jMcCe/gzTk+Vb2DCwszvJP3327s59Btl2MPGbtxCd18XSiZ+M9DwCsCRP9xuaC53zj+aNTL8Uel+aGKKtA1iodrayNUfdPrO//UYnBdlNIHW3hY8zeXeaenIuHTSvLUcA8AidTPNpQt8cVfaHLv3YORQjXauvw=
