@@ -425,14 +425,19 @@ void parse_file(int argc, char * argv[]) {
 
 napi_value jsminify (napi_env env, napi_callback_info cbinfo) {
   // Get arguments length
-  size_t argc;
+  size_t argc = 0;
   napi_get_cb_info(env, cbinfo, &argc, NULL, NULL, NULL);
 
   // Get array of arguments
   napi_value *argv = (napi_value *) malloc(argc * sizeof(uintptr_t));
   napi_get_cb_info(env, cbinfo, &argc, argv, NULL, NULL);
 
-  char * args[argc];
+  if (argc < 1) {
+    napi_throw_error(env, "EINVAL", "Too few arguments");
+    return NULL;
+  }
+
+  char ** args = malloc(sizeof(char *) * argc);
   size_t str_len = 1024;
   for (size_t i = 0; i < argc; i++) {
     args[i] = malloc(str_len);
@@ -442,12 +447,10 @@ napi_value jsminify (napi_env env, napi_callback_info cbinfo) {
     }
   }
 
-  if (argc < 1) {
-    napi_throw_error(env, "EINVAL", "Too few arguments");
-    return NULL;
-  }
-
   parse_file(argc, args);
+  for (size_t i = 0; i < argc; i++)
+    free(args[i]);
+  free(args);
 
   return NULL;
 }
