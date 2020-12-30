@@ -18,7 +18,8 @@
       "<!(node -p \"require('node-addon-api').gyp\")"
     ],
     "cflags_c": [
-      "-std=c99"
+      "-std=c99",
+      "-Wimplicit-fallthrough=0"
     ]
   }]
 }
