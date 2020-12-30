@@ -363,20 +363,20 @@ void parse_file(int argc, char * argv[]) {
 
   struct visit_context *context = context_new(source_code, debug);
 
-  context_add_visitor(context, visitor_new("identifier", node_identifier));
+  context_add_visitor(context, "identifier", node_identifier);
 
-  context_add_visitor(context, visitor_new("regex_pattern", node_text));
-  context_add_visitor(context, visitor_new("regex_flags", node_text));
-  context_add_visitor(context, visitor_new("string", node_text));
-  context_add_visitor(context, visitor_new("number", node_number));
-  context_add_visitor(context, visitor_new("statement_identifier", node_text));
-  context_add_visitor(context, visitor_new("property_identifier", node_text));
-  context_add_visitor(context, visitor_new("shorthand_property_identifier", node_text));
-  context_add_visitor(context, visitor_new("function_declaration", node_function_declaration));
-  context_add_visitor(context, visitor_new("function", node_function));
-  context_add_visitor(context, visitor_new("unary_expression", node_space));
-  context_add_visitor(context, visitor_new("update_expression", node_space));
-  context_add_visitor(context, visitor_new("statement_block", node_line_break));
+  context_add_visitor(context, "regex_pattern", node_text);
+  context_add_visitor(context, "regex_flags", node_text);
+  context_add_visitor(context, "string", node_text);
+  context_add_visitor(context, "number", node_number);
+  context_add_visitor(context, "statement_identifier", node_text);
+  context_add_visitor(context, "property_identifier", node_text);
+  context_add_visitor(context, "shorthand_property_identifier", node_text);
+  context_add_visitor(context, "function_declaration", node_function_declaration);
+  context_add_visitor(context, "function", node_function);
+  context_add_visitor(context, "unary_expression", node_space);
+  context_add_visitor(context, "update_expression", node_space);
+  context_add_visitor(context, "statement_block", node_line_break);
 
   const char * class_types[] = {"class_declaration", "class", NULL};
   context_add_multiple_visitors(context, class_types, node_class);
