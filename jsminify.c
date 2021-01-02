@@ -5,6 +5,7 @@
 #include <tree_sitter/api.h>
 #include "libs/tree-sitter-visitor/tree-sitter-visitor.h"
 
+char * VERSION = "v0.0.19";
 int debug = 0;
 int BEAUTIFY = 0;
 
@@ -334,11 +335,22 @@ void parse_file(int argc, char * argv[]) {
   int i;
   for (i = 0; i < argc; i++) {
     char * arg = argv[i];
-    if (strcmp("-d", arg) == 0 || strcmp("--debug", arg) == 0) {
+    if (strcmp("-v", arg) == 0 || strcmp("--version", arg) == 0) {
+      printf("@lotuz/jsminify %s\n", VERSION);
+      return;
+    } else if (strcmp("-d", arg) == 0 || strcmp("--debug", arg) == 0) {
       debug = 1;
-    }
-    if (strcmp("-b", arg) == 0 || strcmp("--beautify", arg) == 0) {
+    } else if (strcmp("-b", arg) == 0 || strcmp("--beautify", arg) == 0) {
       BEAUTIFY = 1;
+    } else if (strcmp("-h", arg) == 0 || strcmp("--help", arg) == 0) {
+      printf("Usage: jsminify [OPTIONS] [FILE]\n");
+      printf("\n");
+      printf("Options: \n");
+      printf("\t -h, --help: For printing jsminify help\n");
+      printf("\t -v, --version: For printing jsminify version\n");
+      printf("\t -d, --debug: For debugging minification, also helpful for bug report\n");
+      printf("\t (WIP) -b, --beautify: For pretty printing file\n");
+      return;
     }
   }
   char * file_path = argv[argc - 1];

@@ -13,11 +13,12 @@ TODO: also allow to install this library bin from other repos
 
 ## Usage
 
-`jsminify [flags] file.js`
+`jsminify [OPTIONS] [FILE]`
 
-### Flags
+### OPTIONS
 
-* (WIP) -h, --help: For printing jsminify help
+* -h, --help: For printing jsminify help
+* -v, --version: For printing jsminify version
 * -d, --debug: For debugging minification, also helpful for bug report
 * (WIP) -b, --beautify: For pretty printing file
 
@@ -25,6 +26,7 @@ TODO: also allow to install this library bin from other repos
 
 Clone dependencies in the following folder structure:
 
+```
 /workspace
 |
 |----- tree-sitter
@@ -32,6 +34,7 @@ Clone dependencies in the following folder structure:
 |----- tree-sitter-visitor
 |----- hashmap
 |----- jsminify
+```
 
 `node-gyp configure`
 `node-gyp build`
