@@ -39,7 +39,7 @@ Clone dependencies in the following folder structure:
 `node-gyp configure`
 `node-gyp build`
 
-## Dependencies
+## Dependencies (all installed as git submodules under libs/)
 
 [tree-sitter](https://github.com/tree-sitter/tree-sitter)
 [tree-sitter-javascript](https://github.com/tree-sitter/tree-sitter-javascript)

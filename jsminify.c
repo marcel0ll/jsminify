@@ -5,7 +5,7 @@
 #include <tree_sitter/api.h>
 #include "libs/tree-sitter-visitor/tree-sitter-visitor.h"
 
-char * VERSION = "v0.0.19";
+char * VERSION = "v0.0.20";
 int debug = 0;
 int BEAUTIFY = 0;
 
@@ -375,44 +375,43 @@ void parse_file(int argc, char * argv[]) {
 
   struct visit_context *context = context_new(source_code, debug);
 
-  context_add_visitor(context, "identifier", node_identifier);
+  context_set_type_enter(context, "identifier", node_identifier);
 
-  context_add_visitor(context, "regex_pattern", node_text);
-  context_add_visitor(context, "regex_flags", node_text);
-  context_add_visitor(context, "string", node_text);
-  context_add_visitor(context, "number", node_number);
-  context_add_visitor(context, "statement_identifier", node_text);
-  context_add_visitor(context, "property_identifier", node_text);
-  context_add_visitor(context, "shorthand_property_identifier", node_text);
-  context_add_visitor(context, "function_declaration", node_function_declaration);
-  context_add_visitor(context, "function", node_function);
-  context_add_visitor(context, "unary_expression", node_space);
-  context_add_visitor(context, "update_expression", node_space);
-  context_add_visitor(context, "statement_block", node_line_break);
+  context_set_type_enter(context, "regex_pattern", node_text);
+  context_set_type_enter(context, "regex_flags", node_text);
+  context_set_type_enter(context, "string", node_text);
+  context_set_type_enter(context, "number", node_number);
+  context_set_type_enter(context, "statement_identifier", node_text);
+  context_set_type_enter(context, "property_identifier", node_text);
+  context_set_type_enter(context, "shorthand_property_identifier", node_text);
+  context_set_type_enter(context, "function_declaration", node_function_declaration);
+  context_set_type_enter(context, "function", node_function);
+  context_set_type_enter(context, "unary_expression", node_space);
+  context_set_type_enter(context, "update_expression", node_space);
+  context_set_type_enter(context, "statement_block", node_line_break);
 
   const char * class_types[] = {"class_declaration", "class", NULL};
-  context_add_multiple_visitors(context, class_types, node_class);
+  context_set_types_enter(context, class_types, node_class);
 
-  const char * semi_types[] = { "expression_statement_out",
-    "variable_declaration_out", "lexical_declaration_out",
-    "return_statement_out", "empty_statement", "break_statement_out",
-    "continue_statement_out", "throw_statement_out", "do_statement_out",
-    "import_statement_out", NULL};
-  context_add_multiple_visitors(context, semi_types, node_semi);
+  const char * semi_types[] = { "expression_statement", "variable_declaration",
+    "lexical_declaration", "return_statement", "empty_statement",
+    "break_statement", "continue_statement", "throw_statement", "do_statement",
+    "import_statement", NULL};
+  context_set_types_exit(context, semi_types, node_semi);
 
   const char * keyword_space_types[] = {  "export", "default", "const", "new",
     "var", "let", "else", "case", "throw", "void", "return", "do", "delete",
     "get", "set", NULL};
-  context_add_multiple_visitors(context, keyword_space_types, node_keyword_space);
+  context_set_types_enter(context, keyword_space_types, node_keyword_space);
 
   const char * keyword_space_if_value_types[] = { "break_statement",
     "continue_statement", NULL }; 
-  context_add_multiple_visitors(context, keyword_space_if_value_types,
+  context_set_types_enter(context, keyword_space_if_value_types,
       node_keyword_space_if_value);
 
   const char * spaced_keyword_types[] = { "in", "of", "as",
     "instanceof","typeof", NULL }; 
-  context_add_multiple_visitors(context, spaced_keyword_types,
+  context_set_types_enter(context, spaced_keyword_types,
       node_spaced_keyword);
 
   const char * keyword_types[] = { "import", "for", "while", "this", "if",
@@ -423,7 +422,7 @@ void parse_file(int argc, char * argv[]) {
     "|=", "&&=", "||=", "\?\?=", "~", ",", "(", ")", "[", "]", "{", "}",
     "from", "true", "false", "try", "catch", "finally", "with", "super",
     "extends", NULL };
-  context_add_multiple_visitors(context, keyword_types, node_keyword);
+  context_set_types_enter(context, keyword_types, node_keyword);
 
   visit_tree(root_node, context);
   printf("\n");
