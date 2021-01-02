@@ -416,13 +416,13 @@ void parse_file(int argc, char * argv[]) {
       node_spaced_keyword);
 
   const char * keyword_types[] = { "import", "for", "while", "this", "if",
-    "switch", "undefined", "null", "debugger", "yield", "eval", ".", "?", ":",
-    "!", "==", "!=", "===", "!==", ">", ">=", "<", "<=", "++", "--", "=", "+",
-    "-", "*", "/", "%", "**", "<<", ">>", ">>>", "&", "^", "|", "&&", "||",
-    "??", "+=", "-=", "*=", "/=", "%=", "<<=", ">>=", ">>>=", "&=", "^=", "|=",
-    "&&=", "||=", "\?\?=", "~", ",", "(", ")", "[", "]", "{", "}", "from",
-    "true", "false", "try", "catch", "finally", "with", "super", "extends",
-    NULL };
+    "switch", "undefined", "null", "debugger", "yield", "eval", ".", "...",
+    "?", ":", "!", "==", "!=", "===", "!==", ">", ">=", "<", "<=", "++", "--",
+    "=", "+", "-", "*", "/", "%", "**", "<<", ">>", ">>>", "&", "^", "|", "&&",
+    "||", "??", "+=", "-=", "*=", "/=", "%=", "<<=", ">>=", ">>>=", "&=", "^=",
+    "|=", "&&=", "||=", "\?\?=", "~", ",", "(", ")", "[", "]", "{", "}",
+    "from", "true", "false", "try", "catch", "finally", "with", "super",
+    "extends", NULL };
   context_add_multiple_visitors(context, keyword_types, node_keyword);
 
   visit_tree(root_node, context);
