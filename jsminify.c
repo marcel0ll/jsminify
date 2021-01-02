@@ -436,6 +436,11 @@ void parse_file(int argc, char * argv[]) {
 
 
 napi_value jsminify (napi_env env, napi_callback_info cbinfo) {
+  size_t buffer_size = BUFSIZ;
+
+  char * buffer = malloc(buffer_size);
+  setvbuf(stdout, buffer, _IOFBF, buffer_size);
+
   // Get arguments length
   size_t argc = 0;
   napi_get_cb_info(env, cbinfo, &argc, NULL, NULL, NULL);
@@ -460,6 +465,8 @@ napi_value jsminify (napi_env env, napi_callback_info cbinfo) {
   }
 
   parse_file(argc, args);
+  fflush(stdout);
+  free(buffer);
   for (size_t i = 0; i < argc; i++)
     free(args[i]);
   free(args);
