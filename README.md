@@ -9,8 +9,6 @@ minified.
 
 `npm i @lotuz/jsminify`
 
-TODO: also allow to install this library bin from other repos
-
 ## Usage
 
 `jsminify [OPTIONS] [FILE]`
@@ -24,20 +22,22 @@ TODO: also allow to install this library bin from other repos
 
 ## Building
 
-Clone dependencies in the following folder structure:
+Initialize git submodules with: `git submodules init --recursive --update`
 
-```
-/workspace
-|
-|----- tree-sitter
-|----- tree-sitter-javascript
-|----- tree-sitter-visitor
-|----- hashmap
-|----- jsminify
-```
+Install node-gyp dependencies according to platform and run:
 
 `node-gyp configure`
 `node-gyp build`
+
+## Debugging 
+
+Debugging relies on gdb
+
+Change `require` inside `index.js` to the one with DEBUG in the path
+
+`node-gyp rebuild --debug`
+`gdb node`
+`run index.js [OPTIONS] [FILE]`
 
 ## Dependencies (all installed as git submodules under libs/)
 
