@@ -375,44 +375,43 @@ void parse_file(int argc, char * argv[]) {
 
   struct visit_context *context = context_new(source_code, debug);
 
-  context_set_type_enter(context, "identifier", node_identifier);
+  context_set_type_visitor(context, "identifier", node_identifier, NULL);
 
-  context_set_type_enter(context, "regex_pattern", node_text);
-  context_set_type_enter(context, "regex_flags", node_text);
-  context_set_type_enter(context, "string", node_text);
-  context_set_type_enter(context, "number", node_number);
-  context_set_type_enter(context, "statement_identifier", node_text);
-  context_set_type_enter(context, "property_identifier", node_text);
-  context_set_type_enter(context, "shorthand_property_identifier", node_text);
-  context_set_type_enter(context, "function_declaration", node_function_declaration);
-  context_set_type_enter(context, "function", node_function);
-  context_set_type_enter(context, "unary_expression", node_space);
-  context_set_type_enter(context, "update_expression", node_space);
-  context_set_type_enter(context, "statement_block", node_line_break);
+  context_set_type_visitor(context, "regex_pattern", node_text, NULL);
+  context_set_type_visitor(context, "regex_flags", node_text, NULL);
+  context_set_type_visitor(context, "string", node_text, NULL);
+  context_set_type_visitor(context, "number", node_number, NULL);
+  context_set_type_visitor(context, "statement_identifier", node_text, NULL);
+  context_set_type_visitor(context, "property_identifier", node_text, NULL);
+  context_set_type_visitor(context, "shorthand_property_identifier", node_text, NULL);
+  context_set_type_visitor(context, "function_declaration", node_function_declaration, NULL);
+  context_set_type_visitor(context, "function", node_function, NULL);
+  context_set_type_visitor(context, "unary_expression", node_space, NULL);
+  context_set_type_visitor(context, "update_expression", node_space, NULL);
+  context_set_type_visitor(context, "statement_block", node_line_break, NULL);
 
   const char * class_types[] = {"class_declaration", "class", NULL};
-  context_set_types_enter(context, class_types, node_class);
+  context_set_types_visitor(context, class_types, node_class, NULL);
 
   const char * semi_types[] = { "expression_statement", "variable_declaration",
     "lexical_declaration", "return_statement", "empty_statement",
-    "break_statement", "continue_statement", "throw_statement", "do_statement",
-    "import_statement", NULL};
-  context_set_types_exit(context, semi_types, node_semi);
+    "throw_statement", "do_statement", "import_statement", NULL};
+  context_set_types_visitor(context, semi_types, NULL, node_semi);
 
   const char * keyword_space_types[] = {  "export", "default", "const", "new",
     "var", "let", "else", "case", "throw", "void", "return", "do", "delete",
     "get", "set", NULL};
-  context_set_types_enter(context, keyword_space_types, node_keyword_space);
+  context_set_types_visitor(context, keyword_space_types, node_keyword_space, NULL);
 
   const char * keyword_space_if_value_types[] = { "break_statement",
     "continue_statement", NULL }; 
-  context_set_types_enter(context, keyword_space_if_value_types,
-      node_keyword_space_if_value);
+  context_set_types_visitor(context, keyword_space_if_value_types,
+      node_keyword_space_if_value, node_semi);
 
   const char * spaced_keyword_types[] = { "in", "of", "as",
     "instanceof","typeof", NULL }; 
-  context_set_types_enter(context, spaced_keyword_types,
-      node_spaced_keyword);
+  context_set_types_visitor(context, spaced_keyword_types,
+      node_spaced_keyword, NULL);
 
   const char * keyword_types[] = { "import", "for", "while", "this", "if",
     "switch", "undefined", "null", "debugger", "yield", "eval", ".", "...",
@@ -422,7 +421,7 @@ void parse_file(int argc, char * argv[]) {
     "|=", "&&=", "||=", "\?\?=", "~", ",", "(", ")", "[", "]", "{", "}",
     "from", "true", "false", "try", "catch", "finally", "with", "super",
     "extends", NULL };
-  context_set_types_enter(context, keyword_types, node_keyword);
+  context_set_types_visitor(context, keyword_types, node_keyword, NULL);
 
   visit_tree(root_node, context);
   printf("\n");
