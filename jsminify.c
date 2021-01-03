@@ -8,6 +8,7 @@
 char * VERSION = "v0.0.20";
 int debug = 0;
 int BEAUTIFY = 0;
+int KEEP_COMMENTS = 0;
 
 void node_keyword (TSNode node, struct visit_context * context) {
   printf("%s", ts_node_type(node));
@@ -54,8 +55,7 @@ void node_identifier (TSNode node, struct visit_context * context) {
   printf("%s", ts_node_text(node, context));
 
   TSNode next_sibling = ts_node_next_sibling(node);
-  if (ts_node_is_null(next_sibling) || (!ts_node_is_null(next_sibling) &&
-        strcmp(ts_node_type(next_sibling), ",") != 0)) { 
+  if (ts_node_is_null(next_sibling) || (!ts_node_is_null(next_sibling) && strcmp(ts_node_type(next_sibling), ",") != 0)) { 
     TSNode next_parent_sibling = ts_node_next_sibling(parent);
     if(!ts_node_is_null(next_parent_sibling) && strcmp(ts_node_type(next_parent_sibling), "from") == 0) 
       printf(" "); 
@@ -154,14 +154,10 @@ char *strremovedot0(char *str) {
     if ((s = strstr(str, "e")) == NULL)
       if ((s = strstr(str, "E")) == NULL)
         s = str + strlen(str);
-    e = s--;
-    while((*s == '0' || *s == '.') && s > str) {
+    e = s;
+    do {
       s--;
-      if(*s == '.') {
-        s--;
-        break;
-      }
-    }
+    } while((*s == '0') && s > str);
     s++;
     if (s < e)
       while((*s++ = *e++) != '\0')
@@ -303,6 +299,7 @@ int parse_file(int argc, char * argv[]) {
       printf("\t -v, --version: For printing jsminify version\n");
       printf("\t -d, --debug: For debugging minification, also helpful for bug report\n");
       printf("\t -o, --output: Sets the output file\n");
+      printf("\t -c, --keep-comments: Keeps comments while minifying\n");
       printf("\t (WIP) -b, --beautify: For pretty printing file\n");
       return 0;
     } else if (strcmp("-d", arg) == 0 || strcmp("--debug", arg) == 0) {
@@ -319,6 +316,9 @@ int parse_file(int argc, char * argv[]) {
         printf("Missing output file path\n");
         return 1;
       }
+      last_arg = i;
+    } else if (strcmp("-k", arg) == 0 || strcmp("--keep-comments", arg) == 0) {
+      KEEP_COMMENTS = 1;
       last_arg = i;
     }
   }
@@ -371,6 +371,10 @@ int parse_file(int argc, char * argv[]) {
   context_set_type_visitor(context, "unary_expression", node_space, NULL);
   context_set_type_visitor(context, "update_expression", node_space, NULL);
   context_set_type_visitor(context, "statement_block", node_line_break, NULL);
+
+  if (KEEP_COMMENTS) {
+    context_set_type_visitor(context, "comment", node_text, NULL);
+  }
 
   const char * class_types[] = {"class_declaration", "class", NULL};
   context_set_types_visitor(context, class_types, node_class, NULL);
