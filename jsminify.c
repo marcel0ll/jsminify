@@ -334,23 +334,12 @@ void node_line_break (TSNode node, struct visit_context * context) {
 int parse_file(int argc, char * argv[]) {
   int i;
   char * output_path = NULL;
+  int last_arg = 0;
   for (i = 0; i < argc; i++) {
     char * arg = argv[i];
     if (strcmp("-v", arg) == 0 || strcmp("--version", arg) == 0) {
       printf("@lotuz/jsminify %s\n", VERSION);
       return 0;
-    } else if (strcmp("-d", arg) == 0 || strcmp("--debug", arg) == 0) {
-      debug = 1;
-    } else if (strcmp("-b", arg) == 0 || strcmp("--beautify", arg) == 0) {
-      BEAUTIFY = 1;
-    } else if (strcmp("-o", arg) == 0 || strcmp("--output", arg) == 0) {
-      if (i + 1 < argc) {
-        output_path = argv[i + 1];
-        i++;
-      } else {
-        printf("Missing output file path\n");
-        return 1;
-      }
     } else if (strcmp("-h", arg) == 0 || strcmp("--help", arg) == 0) {
       printf("Usage: jsminify [OPTIONS] [FILE]\n");
       printf("\n");
@@ -361,6 +350,21 @@ int parse_file(int argc, char * argv[]) {
       printf("\t -o, --output: Sets the output file\n");
       printf("\t (WIP) -b, --beautify: For pretty printing file\n");
       return 0;
+    } else if (strcmp("-d", arg) == 0 || strcmp("--debug", arg) == 0) {
+      debug = 1;
+      last_arg = i;
+    } else if (strcmp("-b", arg) == 0 || strcmp("--beautify", arg) == 0) {
+      BEAUTIFY = 1;
+      last_arg = i;
+    } else if (strcmp("-o", arg) == 0 || strcmp("--output", arg) == 0) {
+      if (i + 1 < argc) {
+        output_path = argv[i + 1];
+        i++;
+      } else {
+        printf("Missing output file path\n");
+        return 1;
+      }
+      last_arg = i;
     }
   }
   size_t buffer_size = BUFSIZ;
@@ -380,12 +384,12 @@ int parse_file(int argc, char * argv[]) {
     printf("No files passed...\n");
     return 1;
   }
+  const char *source_code = get_source(file_path);
 
   TSLanguage *tree_sitter_javascript();
   TSParser *parser = ts_parser_new();
   ts_parser_set_language(parser, tree_sitter_javascript());
 
-  const char *source_code = get_source(file_path);
 
   TSTree *tree = ts_parser_parse_string(
     parser,
