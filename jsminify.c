@@ -74,32 +74,6 @@ void node_space (TSNode node, struct visit_context * context) {
   printf(" ");
 }
 
-int count_char_at_start(const char *str, const char *target) {
-  size_t lenstr = strlen(str);
-  int count = 0;
-  const char * c = str;
-
-  while (memcmp(c, target, 1) == 0 && c < &str[lenstr - 1]) {
-    count++;
-    c++;
-  }
-
-  return count;
-}
-
-int count_char_at_end(const char *str, const char *target) {
-  size_t lenstr = strlen(str);
-  int count = 0;
-  const char * c = &str[lenstr - 1];
-
-  while (memcmp(c, target, 1) == 0 && c > str) {
-    count++;
-    c--;
-  }
-
-  return count;
-}
-
 size_t len_str_int (long long int value) {
   if (value == 0) return 1;
 
@@ -122,21 +96,6 @@ size_t len_str_int_base (long long int value, int base) {
   }
 
   return (size_t)(ceill(log10(value + 1) / log10(base)) + sig);
-}
-
-char *strremove(char *str, const char *find, int ignore) {
-    char *p, *q, *r;
-    size_t len = strlen(find) - ignore;
-    if ((q = r = strstr(str, find)) != NULL) {
-        q = r = q + ignore;
-        while ((r = strstr(p = r + len, find)) != NULL) {
-            while (p < r)
-                *q++ = *p++;
-        }
-        while ((*q++ = *p++) != '\0')
-            continue;
-    }
-    return str;
 }
 
 size_t count_precision(const char *str) {
@@ -316,10 +275,6 @@ void node_number (TSNode node, struct visit_context * context) {
   }
 }
 
-void node_spaced_text (TSNode node, struct visit_context * context) {
-  printf(" %s", ts_node_text(node, context));
-}
-
 void node_semi (TSNode node, struct visit_context * context) {
   printf(";");
   if (BEAUTIFY)
@@ -464,11 +419,9 @@ int parse_file(int argc, char * argv[]) {
 
 
 napi_value jsminify (napi_env env, napi_callback_info cbinfo) {
-  // Get arguments length
   size_t argc = 0;
   napi_get_cb_info(env, cbinfo, &argc, NULL, NULL, NULL);
 
-  // Get array of arguments
   napi_value *argv = (napi_value *) malloc(argc * sizeof(uintptr_t));
   napi_get_cb_info(env, cbinfo, &argc, argv, NULL, NULL);
 
