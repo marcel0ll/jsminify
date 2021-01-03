@@ -331,17 +331,26 @@ void node_line_break (TSNode node, struct visit_context * context) {
     printf("\n");
 }
 
-void parse_file(int argc, char * argv[]) {
+int parse_file(int argc, char * argv[]) {
   int i;
+  char * output_path = NULL;
   for (i = 0; i < argc; i++) {
     char * arg = argv[i];
     if (strcmp("-v", arg) == 0 || strcmp("--version", arg) == 0) {
       printf("@lotuz/jsminify %s\n", VERSION);
-      return;
+      return 0;
     } else if (strcmp("-d", arg) == 0 || strcmp("--debug", arg) == 0) {
       debug = 1;
     } else if (strcmp("-b", arg) == 0 || strcmp("--beautify", arg) == 0) {
       BEAUTIFY = 1;
+    } else if (strcmp("-o", arg) == 0 || strcmp("--output", arg) == 0) {
+      if (i + 1 < argc) {
+        output_path = argv[i + 1];
+        i++;
+      } else {
+        printf("Missing output file path\n");
+        return 1;
+      }
     } else if (strcmp("-h", arg) == 0 || strcmp("--help", arg) == 0) {
       printf("Usage: jsminify [OPTIONS] [FILE]\n");
       printf("\n");
@@ -349,15 +358,29 @@ void parse_file(int argc, char * argv[]) {
       printf("\t -h, --help: For printing jsminify help\n");
       printf("\t -v, --version: For printing jsminify version\n");
       printf("\t -d, --debug: For debugging minification, also helpful for bug report\n");
+      printf("\t -o, --output: Sets the output file\n");
       printf("\t (WIP) -b, --beautify: For pretty printing file\n");
-      return;
+      return 0;
     }
   }
+  size_t buffer_size = BUFSIZ;
+  char * buffer = malloc(buffer_size);
+  if (output_path != NULL) {
+    stdout = freopen(output_path, "w", stdout);
+    if(stdout == NULL) {
+       perror("fopen"); 
+       return 1;
+    }
+  } 
+
+  setvbuf(stdout, buffer, _IOFBF, buffer_size);
+
   char * file_path = argv[argc - 1];
   if (file_path == NULL) {
-    printf("No file passed...\n");
-    return;
+    printf("No files passed...\n");
+    return 1;
   }
+
   TSLanguage *tree_sitter_javascript();
   TSParser *parser = ts_parser_new();
   ts_parser_set_language(parser, tree_sitter_javascript());
@@ -429,16 +452,14 @@ void parse_file(int argc, char * argv[]) {
   context_delete(context);
   ts_tree_delete(tree);
   ts_parser_delete(parser);
-  return;
+
+  fflush(stdout);
+  free(buffer);
+  return 0;
 }
 
 
 napi_value jsminify (napi_env env, napi_callback_info cbinfo) {
-  size_t buffer_size = BUFSIZ;
-
-  char * buffer = malloc(buffer_size);
-  setvbuf(stdout, buffer, _IOFBF, buffer_size);
-
   // Get arguments length
   size_t argc = 0;
   napi_get_cb_info(env, cbinfo, &argc, NULL, NULL, NULL);
@@ -463,8 +484,6 @@ napi_value jsminify (napi_env env, napi_callback_info cbinfo) {
   }
 
   parse_file(argc, args);
-  fflush(stdout);
-  free(buffer);
   for (size_t i = 0; i < argc; i++)
     free(args[i]);
   free(args);
