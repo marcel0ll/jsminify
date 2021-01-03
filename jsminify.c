@@ -5,7 +5,7 @@
 #include <tree_sitter/api.h>
 #include "libs/tree-sitter-visitor/tree-sitter-visitor.h"
 
-char * VERSION = "v0.0.20";
+char * VERSION = "v0.0.20b1";
 int debug = 0;
 int BEAUTIFY = 0;
 int KEEP_COMMENTS = 0;
@@ -37,6 +37,11 @@ void node_class (TSNode node, struct visit_context * context) {
     printf("class ");
 }
 
+void node_import (TSNode node, struct visit_context * context) {
+  if(ts_node_is_named(node)) return;
+    printf("import");
+}
+
 void node_function (TSNode node, struct visit_context * context) {
   if(!ts_node_is_named(node)) return;
   printf("function");
@@ -44,6 +49,24 @@ void node_function (TSNode node, struct visit_context * context) {
   TSNode value = ts_node_child_by_field_name(node, "name", 4);
   if (!ts_node_is_null(value)) 
     printf(" ");
+}
+
+void node_asterisk (TSNode node, struct visit_context * context) {
+  TSNode parent = ts_node_parent(node);
+  TSNode parent_prev_sibling = ts_node_prev_sibling(parent);
+  if (strcmp(ts_node_type(parent), "namespace_import") == 0) {
+    if (ts_node_is_null(parent_prev_sibling)) {
+      printf(" ");
+    } else if (strcmp(ts_node_type(parent_prev_sibling), ",") != 0) {
+      printf(" ");
+    }
+  }
+
+  printf("*");
+}
+
+void node_from (TSNode node, struct visit_context * context) {
+  printf(" from");
 }
 
 void node_identifier (TSNode node, struct visit_context * context) {
@@ -371,6 +394,9 @@ int parse_file(int argc, char * argv[]) {
   context_set_type_visitor(context, "unary_expression", node_space, NULL);
   context_set_type_visitor(context, "update_expression", node_space, NULL);
   context_set_type_visitor(context, "statement_block", node_line_break, NULL);
+  context_set_type_visitor(context, "*", node_asterisk, NULL);
+  context_set_type_visitor(context, "import", node_import, NULL);
+  context_set_type_visitor(context, "namespace_import", NULL, node_space);
 
   if (KEEP_COMMENTS) {
     context_set_type_visitor(context, "comment", node_text, NULL);
@@ -399,14 +425,14 @@ int parse_file(int argc, char * argv[]) {
   context_set_types_visitor(context, spaced_keyword_types,
       node_spaced_keyword, NULL);
 
-  const char * keyword_types[] = { "import", "for", "while", "this", "if",
+  const char * keyword_types[] = { "from", "for", "while", "this", "if",
     "switch", "undefined", "null", "debugger", "yield", "eval", ".", "...",
     "?", ":", "!", "==", "!=", "===", "!==", ">", ">=", "<", "<=", "++", "--",
-    "=", "+", "-", "*", "/", "%", "**", "<<", ">>", ">>>", "&", "^", "|", "&&",
+    "=", "+", "-", "/", "%", "**", "<<", ">>", ">>>", "&", "^", "|", "&&",
     "||", "??", "+=", "-=", "*=", "/=", "%=", "<<=", ">>=", ">>>=", "&=", "^=",
     "|=", "&&=", "||=", "\?\?=", "~", ",", "(", ")", "[", "]", "{", "}",
-    "from", "true", "false", "try", "catch", "finally", "with", "super",
-    "extends", NULL };
+    "true", "false", "try", "catch", "finally", "with", "super", "extends",
+    NULL };
   context_set_types_visitor(context, keyword_types, node_keyword, NULL);
 
   visit_tree(root_node, context);

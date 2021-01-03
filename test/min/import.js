@@ -1,1 +1,1 @@
-import Import from"../";import{Im1,Im2,Im3}from"./";import Import,{Im1}from"../../";
+import defaultExport from"module-name";import * as name from"module-name";import{export1}from"module-name";import{export1 as alias1}from"module-name";import{export1,export2}from"module-name";import{foo,bar}from"path";import{export1,export2 as alias2}from"module-name";import defaultExport,{export1}from"module-name";import defaultExport,* as name from"module-name";import"module-name";var promise=import("module-name");
