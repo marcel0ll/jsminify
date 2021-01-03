@@ -299,7 +299,7 @@ int parse_file(int argc, char * argv[]) {
       printf("\t -v, --version: For printing jsminify version\n");
       printf("\t -d, --debug: For debugging minification, also helpful for bug report\n");
       printf("\t -o, --output: Sets the output file\n");
-      printf("\t -c, --keep-comments: Keeps comments while minifying\n");
+      printf("\t (WIP) -c, --keep-comments: Keeps comments while minifying\n");
       printf("\t (WIP) -b, --beautify: For pretty printing file\n");
       return 0;
     } else if (strcmp("-d", arg) == 0 || strcmp("--debug", arg) == 0) {

@@ -13,11 +13,15 @@ minified.
 
 `jsminify [OPTIONS] [FILE]`
 
+**FILE must always come last**
+
 ### OPTIONS
 
 * -h, --help: For printing jsminify help
 * -v, --version: For printing jsminify version
 * -d, --debug: For debugging minification, also helpful for bug report
+* -o, --output: Sets the output file
+* (WIP) -c, --keep-comments: Keeps comments while minifying
 * (WIP) -b, --beautify: For pretty printing file
 
 ## Building
