@@ -449,9 +449,9 @@ int parse_file(int argc, char * argv[]) {
     "throw_statement", "do_statement", "import_statement", NULL};
   context_set_types_visitor(context, semi_types, NULL, node_semi);
 
-  const char * keyword_space_types[] = {  "export", "default", "const", "new",
+  const char * keyword_space_types[] = {"export", "default", "const", "new",
     "var", "let", "else", "case", "throw", "void", "return", "do", "delete",
-    "get", "set", NULL};
+    "get", "set", "typeof", NULL};
   context_set_types_visitor(context, keyword_space_types, node_keyword_space, NULL);
 
   const char * keyword_space_if_value_types[] = { "break_statement",
@@ -460,7 +460,7 @@ int parse_file(int argc, char * argv[]) {
       node_keyword_space_if_value, node_semi);
 
   const char * spaced_keyword_types[] = { "in", "of", "as",
-    "instanceof","typeof", NULL }; 
+    "instanceof", NULL }; 
   context_set_types_visitor(context, spaced_keyword_types,
       node_spaced_keyword, NULL);
 
