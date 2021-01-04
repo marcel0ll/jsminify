@@ -55,7 +55,7 @@ TSNode find_next_update_leaf (TSNode node) {
   }
 
   char * type = ts_node_type(node);
-  if (type == "update_expression") {
+  if (type == "update_expression" || type == "unary_expression") {
     return node;
   } else if (type == "binary_expression") {
     TSNode child_node = ts_node_child(node, 0);
@@ -75,9 +75,11 @@ void node_plus (TSNode node, struct visit_context * context) {
   TSNode next_sibling = ts_node_next_sibling(node);
   if (!ts_node_is_null(next_sibling)) {
     TSNode next_leaf = find_next_update_leaf(next_sibling);
-    if (ts_node_type(next_leaf) == "update_expression") {
+    char * type = ts_node_type(next_leaf);
+    if (type == "update_expression" || type == "unary_expression") {
       TSNode child_node = ts_node_child(next_leaf, 0);
-      if (ts_node_type(child_node) == "++") {
+      char * child_type = ts_node_type(child_node); 
+      if (child_type == "++" || child_type == "+") {
         printf(" ");
       }
     }
@@ -95,9 +97,11 @@ void node_minus (TSNode node, struct visit_context * context) {
   TSNode next_sibling = ts_node_next_sibling(node);
   if (!ts_node_is_null(next_sibling)) {
     TSNode next_leaf = find_next_update_leaf(next_sibling);
-    if (ts_node_type(next_leaf) == "update_expression") {
+    char * type = ts_node_type(next_leaf);
+    if (type == "update_expression" || type == "unary_expression") {
       TSNode child_node = ts_node_child(next_leaf, 0);
-      if (ts_node_type(child_node) == "--") {
+      char * child_type = ts_node_type(child_node); 
+      if (child_type == "--" || child_type == "-") {
         printf(" ");
       }
     }
@@ -492,8 +496,6 @@ int parse_file(int argc, char * argv[]) {
   context_set_type_visitor(context, "shorthand_property_identifier", node_text, NULL);
   context_set_type_visitor(context, "function_declaration", node_function_declaration, NULL);
   context_set_type_visitor(context, "function", node_function, NULL);
-  /* context_set_type_visitor(context, "unary_expression", node_space, NULL); */
-  /* context_set_type_visitor(context, "update_expression", node_space, NULL); */
   context_set_type_visitor(context, "statement_block", node_line_break, NULL);
   context_set_type_visitor(context, "*", node_asterisk, NULL);
   context_set_type_visitor(context, "import", node_import, NULL);
