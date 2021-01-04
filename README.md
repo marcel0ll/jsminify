@@ -50,6 +50,15 @@ Change `require` inside `index.js` to the one with DEBUG in the path
 [tree-sitter-visitor](https://github.com/marcel0ll/tree-sitter-visitor)
 [hashmap](https://github.com/tidwall/hashmap.c)
 
+## Publishing
+
+* Bump version on jsminify.c and package.json
+* Create git tag
+* Push tag
+* Wait for CI builds
+* run `prebuildify-ci download`
+* run `npm publish`
+
 ## How I tested this (for now)
 
 I used jsminify to minify:
