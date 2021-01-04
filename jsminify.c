@@ -66,6 +66,15 @@ void node_plus (TSNode node, struct visit_context * context) {
   }
 }
 
+void node_else (TSNode node, struct visit_context * context) {
+  printf("else");
+  TSNode next_sibling = ts_node_next_sibling(node);
+  if (!ts_node_is_null(next_sibling) && ts_node_type(next_sibling) != "statement_block") {
+    printf(" ");
+  }
+}
+
+
 void node_minus (TSNode node, struct visit_context * context) {
   TSNode parent = ts_node_parent(node);
   if (ts_node_is_null(parent) || ts_node_type(parent) != "binary_expression") {
@@ -472,6 +481,7 @@ int parse_file(int argc, char * argv[]) {
   context_set_type_visitor(context, ",", node_comma, NULL);
   context_set_type_visitor(context, "+", node_plus, NULL);
   context_set_type_visitor(context, "-", node_minus, NULL);
+  context_set_type_visitor(context, "else", node_else, NULL);
 
   if (KEEP_COMMENTS) {
     context_set_type_visitor(context, "comment", node_text, NULL);
@@ -486,7 +496,7 @@ int parse_file(int argc, char * argv[]) {
   context_set_types_visitor(context, semi_types, NULL, node_semi);
 
   const char * keyword_space_types[] = {"export", "default", "const", "new",
-    "var", "let", "else", "case", "throw", "void", "return", "do", "delete",
+    "var", "let", "case", "throw", "void", "return", "do", "delete",
     "get", "set", "typeof", NULL};
   context_set_types_visitor(context, keyword_space_types, node_keyword_space, NULL);
 
