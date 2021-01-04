@@ -37,6 +37,18 @@ void node_class (TSNode node, struct visit_context * context) {
     printf("class ");
 }
 
+void node_comma (TSNode node, struct visit_context * context) {
+  TSNode parent = ts_node_parent(node);
+  if (!ts_node_is_null(parent) && ts_node_type(parent) == "array") {
+    TSNode next_sibling = ts_node_next_sibling(node);
+    if (!ts_node_is_null(next_sibling) && ts_node_type(next_sibling) != "]") {
+      printf(",");
+    }
+  } else {
+    printf(",");
+  }
+}
+
 void node_import (TSNode node, struct visit_context * context) {
   if(ts_node_is_named(node)) return;
     printf("import");
@@ -397,6 +409,7 @@ int parse_file(int argc, char * argv[]) {
   context_set_type_visitor(context, "*", node_asterisk, NULL);
   context_set_type_visitor(context, "import", node_import, NULL);
   context_set_type_visitor(context, "namespace_import", NULL, node_space);
+  context_set_type_visitor(context, ",", node_comma, NULL);
 
   if (KEEP_COMMENTS) {
     context_set_type_visitor(context, "comment", node_text, NULL);
@@ -430,7 +443,7 @@ int parse_file(int argc, char * argv[]) {
     "?", ":", "!", "==", "!=", "===", "!==", ">", ">=", "<", "<=", "++", "--",
     "=", "+", "-", "/", "%", "**", "<<", ">>", ">>>", "&", "^", "|", "&&",
     "||", "??", "+=", "-=", "*=", "/=", "%=", "<<=", ">>=", ">>>=", "&=", "^=",
-    "|=", "&&=", "||=", "\?\?=", "~", ",", "(", ")", "[", "]", "{", "}",
+    "|=", "&&=", "||=", "\?\?=", "~", "(", ")", "[", "]", "{", "}",
     "true", "false", "try", "catch", "finally", "with", "super", "extends",
     NULL };
   context_set_types_visitor(context, keyword_types, node_keyword, NULL);
