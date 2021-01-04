@@ -9,6 +9,7 @@ char * VERSION = "v0.0.20";
 int debug = 0;
 int BEAUTIFY = 0;
 int KEEP_COMMENTS = 0;
+FILE *new_stdout;
 
 void node_keyword (TSNode node, struct visit_context * context) {
   printf("%s", ts_node_type(node));
@@ -300,17 +301,16 @@ void node_number (TSNode node, struct visit_context * context) {
     }
     e = 0;
   } else {
-    const int DIGITS = 16;
-    char ip[DIGITS + 1], fp[DIGITS + 1], ep[DIGITS + 1];
+    char ip[17];
     char *p = text;
-    memcpy(ip, text, DIGITS);
-    ip[DIGITS] = '\0';
+    memcpy(ip, text, 16);
+    ip[16] = '\0';
 
     integer = strtoll(ip, NULL, 10);
     if ((p = strstr(text, ".")) != NULL) {
       p++;
-      memcpy(ip, p, DIGITS);
-      ip[DIGITS] = '\0';
+      memcpy(ip, p, 16);
+      ip[16] = '\0';
       precision = count_precision(ip);
       /* printf("%s\n", p); */
       fraction = strtoull(ip, NULL, 10);
@@ -453,14 +453,16 @@ int parse_file(int argc, char * argv[]) {
   size_t buffer_size = BUFSIZ;
   char * buffer = malloc(buffer_size);
   if (output_path != NULL) {
-    stdout = freopen(output_path, "w", stdout);
-    if(stdout == NULL) {
+    new_stdout = freopen(output_path, "w", stdout);
+    if(new_stdout == NULL) {
        perror("fopen"); 
        return 1;
     }
-  } 
+  } else {
+    new_stdout = stdout;
+  }
 
-  setvbuf(stdout, buffer, _IOFBF, buffer_size);
+  setvbuf(new_stdout, buffer, _IOFBF, buffer_size);
 
   char * file_path = argv[argc - 1];
   if (file_path == NULL) {
@@ -548,7 +550,7 @@ int parse_file(int argc, char * argv[]) {
   ts_tree_delete(tree);
   ts_parser_delete(parser);
 
-  fflush(stdout);
+  fflush(new_stdout);
   free(buffer);
   return 0;
 }
