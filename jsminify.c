@@ -307,7 +307,13 @@ void node_number (TSNode node, struct visit_context * context) {
 }
 
 void node_semi (TSNode node, struct visit_context * context) {
-  printf(";");
+  TSNode next_sibling = ts_node_next_sibling(node);
+  if (!ts_node_is_null(next_sibling) && ts_node_type(next_sibling) != "}") {
+    printf(";");
+  } else if(ts_node_is_null(next_sibling)) {
+    printf(";");
+  }
+
   if (BEAUTIFY)
     printf("\n");
 }
