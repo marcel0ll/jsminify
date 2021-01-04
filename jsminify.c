@@ -5,7 +5,7 @@
 #include <tree_sitter/api.h>
 #include "libs/tree-sitter-visitor/tree-sitter-visitor.h"
 
-char * VERSION = "v0.0.20b1";
+char * VERSION = "v0.0.20";
 int debug = 0;
 int BEAUTIFY = 0;
 int KEEP_COMMENTS = 0;

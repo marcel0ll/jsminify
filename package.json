@@ -1,7 +1,7 @@
 {
   "name": "@lotuz/jsminify",
-  "version": "0.0.19",
-  "description": "A javascript minifier built on top of a tree-sitter parser in C",
+  "version": "0.0.20",
+  "description": "A javascript minifier written in C, using tree-sitter-javascript parser",
   "keywords": [
     "javascript",
     "minifier",
