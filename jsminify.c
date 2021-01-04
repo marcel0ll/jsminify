@@ -134,14 +134,11 @@ size_t len_str_int_base (long long int value, int base) {
 }
 
 size_t count_precision(const char *str) {
-  char * s;
+  char * s = str;
   size_t count = 0;
-  if ((s = strstr(str, ".")) != NULL) {
+  while(*s != '\0' && *s != 'e' && *s != 'E') {
+    count++;
     s++;
-    while(*s != '\0' && *s != 'e' && *s != 'E') {
-      count++;
-      s++;
-    }
   }
 
   return count;
@@ -204,11 +201,13 @@ char *strremovedot0(char *str) {
 
 void node_number (TSNode node, struct visit_context * context) {
   char * text = ts_node_text(node, context);
+  /* printf("%s\n", text); */
   // remove non relevant right 0
   text = strremovedot0(text);
+  /* printf("%s\n", text); */
 
   long long int integer = 0;
-  long long int fraction = 0;
+  long long unsigned int fraction = 0;
   int precision = 0;
   int base = 10;
   int move = 2;
@@ -234,26 +233,40 @@ void node_number (TSNode node, struct visit_context * context) {
     }
     e = 0;
   } else {
-    precision = count_precision(text);
+    const int DIGITS = 16;
+    char ip[DIGITS + 1], fp[DIGITS + 1], ep[DIGITS + 1];
     char *p = text;
-    integer = strtoll(p, &p, 10);
-    if (strstr(text, ".") != NULL) {
-      fraction = strtoll(&p[1], &p, 10);
+    memcpy(ip, text, DIGITS);
+    ip[DIGITS] = '\0';
+
+    integer = strtoll(ip, NULL, 10);
+    if ((p = strstr(text, ".")) != NULL) {
+      p++;
+      memcpy(ip, p, DIGITS);
+      ip[DIGITS] = '\0';
+      precision = count_precision(ip);
+      /* printf("%s\n", p); */
+      fraction = strtoull(ip, NULL, 10);
+      /* printf("%llu\n", fraction); */
     }
-    if (strstr(p, "e") != NULL || strstr(p, "E") != NULL) {
+    if ((p = strstr(text, "e")) != NULL || (p = strstr(text, "E")) != NULL) {
       p = strreplace(p, "+0", "+");
       p = strreplace(p, "-0", "-");
       p++;
       e = strtol(p, &p, 10);
     }
   }
+  /* printf("%lld.%llue%d  %d\n", integer, fraction, e, precision); */
 
   if (integer == 0 && (int) len_str_int(fraction) < precision) {
     e -= precision - len_str_int(fraction);
     precision = len_str_int(fraction);
   }
 
+  /* printf("%lld.%llde%d  %d\n", integer, fraction, e, precision); */
+
   while (precision > 0) {
+    /* printf("%lld.%llde%d\n", integer, fraction, e); */
     long long int d = pow(10, precision - 1);
     long long int i = fraction / d;
     fraction = fraction % d;
@@ -264,19 +277,26 @@ void node_number (TSNode node, struct visit_context * context) {
   }
 
   while (integer % 10LL == 0 && integer > 0) {
+    /* printf("%lld.%llde%d\n", integer, fraction, e); */
     integer = integer / 10LL;
     e++;
   }
 
   if (e > 0 && e <= 2) {
+    /* printf("%lld.%llde%d\n", integer, fraction, e); */
     int d = pow(10, e);
     integer = integer * d;
     e = 0;
   }
 
+  /* printf("\n%lld e%d\n", integer, e); */
+  /* printf("%d %d\n", len_str_int(integer), -e); */
   int difelen = -e - len_str_int(integer);
-  if (difelen < 3 && difelen >= -7) {
+  // dif > 2
+  // dif <= 2
+  if (difelen <= 2) {
     while(e < 0) {
+      /* printf("%lld.%llde%d\n", integer, fraction, e); */
       long long int i = integer % 10;
       integer = integer / 10;
       fraction = fraction + i * (long long int)pow(10, precision);
@@ -297,7 +317,7 @@ void node_number (TSNode node, struct visit_context * context) {
       printf(".");
       int zeroes = precision - len_str_int(fraction);
       for(int z = 0; z < zeroes ; z++) printf("0");
-      printf("%lld", fraction);
+      printf("%llu", fraction);
     }
     if (e != 0)
       printf("e%d", e);
