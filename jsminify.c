@@ -49,6 +49,21 @@ void node_comma (TSNode node, struct visit_context * context) {
   }
 }
 
+TSNode find_next_update_leaf (TSNode node) {
+  if (ts_node_is_null(node)) {
+    return node;
+  }
+
+  char * type = ts_node_type(node);
+  if (type == "update_expression") {
+    return node;
+  } else if (type == "binary_expression") {
+    TSNode child_node = ts_node_child(node, 0);
+    return find_next_update_leaf(child_node);
+  } else {
+    return node;
+  }
+}
 void node_plus (TSNode node, struct visit_context * context) {
   TSNode parent = ts_node_parent(node);
   if (ts_node_is_null(parent) || ts_node_type(parent) != "binary_expression") {
@@ -58,22 +73,16 @@ void node_plus (TSNode node, struct visit_context * context) {
 
   printf("+");
   TSNode next_sibling = ts_node_next_sibling(node);
-  if (!ts_node_is_null(next_sibling) && ts_node_type(next_sibling) == "update_expression") {
-    TSNode child_node = ts_node_child(next_sibling, 0);
-    if (ts_node_type(child_node) == "++") {
-      printf(" ");
+  if (!ts_node_is_null(next_sibling)) {
+    TSNode next_leaf = find_next_update_leaf(next_sibling);
+    if (ts_node_type(next_leaf) == "update_expression") {
+      TSNode child_node = ts_node_child(next_leaf, 0);
+      if (ts_node_type(child_node) == "++") {
+        printf(" ");
+      }
     }
   }
 }
-
-void node_else (TSNode node, struct visit_context * context) {
-  printf("else");
-  TSNode next_sibling = ts_node_next_sibling(node);
-  if (!ts_node_is_null(next_sibling) && ts_node_type(next_sibling) != "statement_block") {
-    printf(" ");
-  }
-}
-
 
 void node_minus (TSNode node, struct visit_context * context) {
   TSNode parent = ts_node_parent(node);
@@ -84,11 +93,22 @@ void node_minus (TSNode node, struct visit_context * context) {
 
   printf("-");
   TSNode next_sibling = ts_node_next_sibling(node);
-  if (!ts_node_is_null(next_sibling) && ts_node_type(next_sibling) == "update_expression") {
-    TSNode child_node = ts_node_child(next_sibling, 0);
-    if (ts_node_type(child_node) == "--") {
-      printf(" ");
+  if (!ts_node_is_null(next_sibling)) {
+    TSNode next_leaf = find_next_update_leaf(next_sibling);
+    if (ts_node_type(next_leaf) == "update_expression") {
+      TSNode child_node = ts_node_child(next_leaf, 0);
+      if (ts_node_type(child_node) == "--") {
+        printf(" ");
+      }
     }
+  }
+}
+
+void node_else (TSNode node, struct visit_context * context) {
+  printf("else");
+  TSNode next_sibling = ts_node_next_sibling(node);
+  if (!ts_node_is_null(next_sibling) && ts_node_type(next_sibling) != "statement_block") {
+    printf(" ");
   }
 }
 
