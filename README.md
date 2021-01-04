@@ -85,14 +85,18 @@ parts of a file while developing.
   * [ ] MINIFICATION
     - [ ] Write article about jsminify 1.0.0
     - [ ] Write enough tests for common javascript
-    - [ ] Test in Windows
-    - [ ] Test in Mac
-    - [ ] Ensure memory allocation/deallocation
-    - [ ] Ensure that "includes" are done right?
-    - [ ] Improve scientific number printing
-    - [ ] Improve decimal digits precision printing: ECMA-256 only requires up
+    - [x] Improve scientific number printing
+    - [x] Improve operator spacing
+    - [x] Improve decimal digits precision printing: ECMA-256 only requires up
           to 21 digits. Chrome apparently crops at 16. So:
           0.89081309152928522810 becomes 0.8908130915292852
+    - [x] Remove comma dangle
+    - [x] Check memory allocation/deallocation
+    - [x] Check "includes"
+    - [x] Test in Windows
+    - [x] Test in Mac
+
+- [ ] 1.1.0
   * [ ] COMPRESSION
     - [ ] Transform scoped parameters identifiers in shorter versions. ex.:
           `function(foo){foo()}` => `function(a){a()}`
