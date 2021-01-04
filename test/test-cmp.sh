@@ -26,8 +26,10 @@ for f in comp/*; do
   echo uglifyjs 
   time uglifyjs $f > res/${f%%.js}.min.ugli.js
 
-  prettier res/${f%%.js}.min.jsm.js > res/${f%%.js}.pre.jsm.js
-  prettier res/${f%%.js}.min.ugli.js > res/${f%%.js}.pre.ugli.js
+  if [ -z "$TIME_ONLY" ]; then
+    prettier res/${f%%.js}.min.jsm.js > res/${f%%.js}.pre.jsm.js
+    prettier res/${f%%.js}.min.ugli.js > res/${f%%.js}.pre.ugli.js
+  fi
 
   diff res/${f%%.js}.pre.ugli.js res/${f%%.js}.pre.jsm.js &> res/${f%%.js}.diff
 done

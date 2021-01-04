@@ -77,14 +77,14 @@ Better tests are currently being written in [test/](./test/README.md)
 ## Improvements
 
 Due to how tree-sitter works it might be possible to only re-minify edited
-parts of a file while developing.
+parts of a file while developing. Not sure about this.
 
 ## Roadmap
 
 - [ ] 1.0.0
   * [ ] MINIFICATION
     - [ ] Write article about jsminify 1.0.0
-    - [ ] Write enough tests for common javascript
+    - [x] Write enough tests for common javascript
     - [x] Improve scientific number printing
     - [x] Improve operator spacing
     - [x] Improve decimal digits precision printing: ECMA-256 only requires up
