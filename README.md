@@ -39,16 +39,16 @@ Debugging relies on gdb
 
 Change `require` inside `index.js` to the one with DEBUG in the path
 
-`node-gyp rebuild --debug`
-`gdb node`
-`run index.js [OPTIONS] [FILE]`
+- `node-gyp rebuild --debug`
+- `gdb node`
+- `run index.js [OPTIONS] [FILE]`
 
 ## Dependencies (all installed as git submodules under libs/)
 
-[tree-sitter](https://github.com/tree-sitter/tree-sitter)
-[tree-sitter-javascript](https://github.com/tree-sitter/tree-sitter-javascript)
-[tree-sitter-visitor](https://github.com/marcel0ll/tree-sitter-visitor)
-[hashmap](https://github.com/tidwall/hashmap.c)
+- [tree-sitter](https://github.com/tree-sitter/tree-sitter)
+- [tree-sitter-javascript](https://github.com/tree-sitter/tree-sitter-javascript)
+- [tree-sitter-visitor](https://github.com/marcel0ll/tree-sitter-visitor)
+- [hashmap](https://github.com/tidwall/hashmap.c)
 
 ## Publishing
 
