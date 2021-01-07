@@ -543,7 +543,7 @@ int parse_file(int argc, char * argv[]) {
     "try", "catch", "finally", "with", "super", "extends", NULL };
   context_set_types_visitor(context, keyword_types, node_keyword, NULL);
 
-  visit_tree(root_node, context);
+  visit_tree_cursor(root_node, context);
   printf("\n");
 
   context_delete(context);
