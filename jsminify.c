@@ -40,9 +40,9 @@ void node_class (TSNode node, struct visit_context * context) {
 
 void node_comma (TSNode node, struct visit_context * context) {
   TSNode parent = ts_node_parent(node);
-  if (!ts_node_is_null(parent) && ts_node_type(parent) == "array") {
+  if (!ts_node_is_null(parent) && strcmp(ts_node_type(parent), "array") == 0) {
     TSNode next_sibling = ts_node_next_sibling(node);
-    if (!ts_node_is_null(next_sibling) && ts_node_type(next_sibling) != "]") {
+    if (!ts_node_is_null(next_sibling) && strcmp(ts_node_type(next_sibling), "]") != 0) {
       printf(",");
     }
   } else {
@@ -55,19 +55,20 @@ TSNode find_next_update_leaf (TSNode node) {
     return node;
   }
 
-  char * type = ts_node_type(node);
-  if (type == "update_expression" || type == "unary_expression") {
+  const char * type = ts_node_type(node);
+  if (strcmp(type, "update_expression") == 0 || strcmp(type,  "unary_expression") == 0) {
     return node;
-  } else if (type == "binary_expression") {
+  } else if (strcmp(type, "binary_expression") == 0) {
     TSNode child_node = ts_node_child(node, 0);
     return find_next_update_leaf(child_node);
   } else {
     return node;
   }
 }
+
 void node_plus (TSNode node, struct visit_context * context) {
   TSNode parent = ts_node_parent(node);
-  if (ts_node_is_null(parent) || ts_node_type(parent) != "binary_expression") {
+  if (ts_node_is_null(parent) || strcmp(ts_node_type(parent), "binary_expression") != 0) {
     printf("+");
     return;
   }
@@ -76,11 +77,11 @@ void node_plus (TSNode node, struct visit_context * context) {
   TSNode next_sibling = ts_node_next_sibling(node);
   if (!ts_node_is_null(next_sibling)) {
     TSNode next_leaf = find_next_update_leaf(next_sibling);
-    char * type = ts_node_type(next_leaf);
-    if (type == "update_expression" || type == "unary_expression") {
+    const char * type = ts_node_type(next_leaf);
+    if (strcmp(type,  "update_expression") == 0 || strcmp(type, "unary_expression") == 0) {
       TSNode child_node = ts_node_child(next_leaf, 0);
-      char * child_type = ts_node_type(child_node); 
-      if (child_type == "++" || child_type == "+") {
+      const char * child_type = ts_node_type(child_node); 
+      if (strcmp(child_type, "++") == 0 || strcmp(child_type, "+") == 0) {
         printf(" ");
       }
     }
@@ -89,7 +90,7 @@ void node_plus (TSNode node, struct visit_context * context) {
 
 void node_minus (TSNode node, struct visit_context * context) {
   TSNode parent = ts_node_parent(node);
-  if (ts_node_is_null(parent) || ts_node_type(parent) != "binary_expression") {
+  if (ts_node_is_null(parent) || strcmp(ts_node_type(parent), "binary_expression") != 0) {
     printf("-");
     return;
   }
@@ -98,11 +99,11 @@ void node_minus (TSNode node, struct visit_context * context) {
   TSNode next_sibling = ts_node_next_sibling(node);
   if (!ts_node_is_null(next_sibling)) {
     TSNode next_leaf = find_next_update_leaf(next_sibling);
-    char * type = ts_node_type(next_leaf);
-    if (type == "update_expression" || type == "unary_expression") {
+    const char * type = ts_node_type(next_leaf);
+    if (strcmp(type, "update_expression") == 0 || strcmp(type, "unary_expression") == 0) {
       TSNode child_node = ts_node_child(next_leaf, 0);
-      char * child_type = ts_node_type(child_node); 
-      if (child_type == "--" || child_type == "-") {
+      const char * child_type = ts_node_type(child_node); 
+      if (strcmp(child_type, "--") == 0 || strcmp(child_type, "-") == 0) {
         printf(" ");
       }
     }
@@ -112,7 +113,7 @@ void node_minus (TSNode node, struct visit_context * context) {
 void node_else (TSNode node, struct visit_context * context) {
   printf("else");
   TSNode next_sibling = ts_node_next_sibling(node);
-  if (!ts_node_is_null(next_sibling) && ts_node_type(next_sibling) != "statement_block") {
+  if (!ts_node_is_null(next_sibling) && strcmp(ts_node_type(next_sibling), "statement_block") != 0) {
     printf(" ");
   }
 }
@@ -202,7 +203,7 @@ size_t len_str_int_base (long long int value, int base) {
 }
 
 size_t count_precision(const char *str) {
-  char * s = str;
+  const char * s = str;
   size_t count = 0;
   while(*s != '\0' && *s != 'e' && *s != 'E') {
     count++;
@@ -395,7 +396,7 @@ void node_number (TSNode node, struct visit_context * context) {
 
 void node_semi (TSNode node, struct visit_context * context) {
   TSNode next_sibling = ts_node_next_sibling(node);
-  if (!ts_node_is_null(next_sibling) && ts_node_type(next_sibling) != "}") {
+  if (!ts_node_is_null(next_sibling) && strcmp(ts_node_type(next_sibling), "}") != 0) {
     printf(";");
   } else if(ts_node_is_null(next_sibling)) {
     printf(";");
