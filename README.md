@@ -48,7 +48,6 @@ Change `require` inside `index.js` to the one with DEBUG in the path
 - [tree-sitter](https://github.com/tree-sitter/tree-sitter)
 - [tree-sitter-javascript](https://github.com/tree-sitter/tree-sitter-javascript)
 - [tree-sitter-visitor](https://github.com/marcel0ll/tree-sitter-visitor)
-- [hashmap](https://github.com/tidwall/hashmap.c)
 
 ## Publishing
 

@@ -485,7 +485,7 @@ int parse_file(int argc, char * argv[]) {
 
   TSNode root_node = ts_tree_root_node(tree);
 
-  struct visit_context *context = context_new(source_code, debug);
+  struct visit_context *context = context_new(tree_sitter_javascript(), source_code, debug);
 
   context_set_type_visitor(context, "identifier", node_identifier, NULL);
 

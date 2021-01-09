@@ -6,7 +6,6 @@
       "./libs/tree-sitter-visitor/tree-sitter-visitor.c",
       "./libs/tree-sitter-javascript/src/parser.c",
       "./libs/tree-sitter-javascript/src/scanner.c",
-      "./libs/hashmap.c/hashmap.c",
       "./libs/tree-sitter/lib/src/lib.c"
     ],
     "include_dirs": [
