@@ -15,9 +15,6 @@
     ],
     "dependencies": [
       "<!(node -p \"require('node-addon-api').gyp\")"
-    ],
-    "cflags_c": [
-      "-std=c99"
     ]
   }]
 }
