@@ -39,15 +39,21 @@ void node_class (TSNode node, struct visit_context * context) {
 }
 
 void node_comma (TSNode node, struct visit_context * context) {
-  TSNode parent = ts_node_parent(node);
-  if (!ts_node_is_null(parent) && strcmp(ts_node_type(parent), "array") == 0) {
-    TSNode next_sibling = ts_node_next_sibling(node);
-    if (!ts_node_is_null(next_sibling) && strcmp(ts_node_type(next_sibling), "]") != 0) {
-      printf(",");
+  TSTreeCursor cursor = ts_tree_cursor_new(node);
+  if (ts_tree_cursor_goto_parent(&cursor)) {
+    TSNode parent = ts_tree_cursor_current_node(&cursor);
+    if (strcmp(ts_node_type(parent), "array") == 0) {
+      if (ts_tree_cursor_goto_next_sibling(&cursor)) {
+        TSNode next_sibling = ts_tree_cursor_current_node(&cursor);
+        if (strcmp(ts_node_type(next_sibling), "]") != 0) {
+          printf(",");
+        }
+      }
     }
   } else {
     printf(",");
   }
+  ts_tree_cursor_delete(&cursor);
 }
 
 TSNode find_next_update_leaf (TSNode node) {
@@ -67,15 +73,25 @@ TSNode find_next_update_leaf (TSNode node) {
 }
 
 void node_plus (TSNode node, struct visit_context * context) {
-  TSNode parent = ts_node_parent(node);
-  if (ts_node_is_null(parent) || strcmp(ts_node_type(parent), "binary_expression") != 0) {
+  TSTreeCursor cursor = ts_tree_cursor_new(node);
+  if (ts_tree_cursor_goto_parent(&cursor)) {
+    TSNode parent = ts_tree_cursor_current_node(&cursor);
+    if (strcmp(ts_node_type(parent), "binary_expression") != 0) {
+      printf("+");
+      ts_tree_cursor_delete(&cursor);
+      return;
+    }
+  } else {
+    ts_tree_cursor_delete(&cursor);
     printf("+");
     return;
   }
 
   printf("+");
-  TSNode next_sibling = ts_node_next_sibling(node);
-  if (!ts_node_is_null(next_sibling)) {
+  
+  ts_tree_cursor_reset(&cursor, node);
+  if (ts_tree_cursor_goto_next_sibling(&cursor)) {
+    TSNode next_sibling = ts_tree_cursor_current_node(&cursor);
     TSNode next_leaf = find_next_update_leaf(next_sibling);
     const char * type = ts_node_type(next_leaf);
     if (strcmp(type,  "update_expression") == 0 || strcmp(type, "unary_expression") == 0) {
@@ -86,21 +102,33 @@ void node_plus (TSNode node, struct visit_context * context) {
       }
     }
   }
+
+  ts_tree_cursor_delete(&cursor);
 }
 
 void node_minus (TSNode node, struct visit_context * context) {
-  TSNode parent = ts_node_parent(node);
-  if (ts_node_is_null(parent) || strcmp(ts_node_type(parent), "binary_expression") != 0) {
+  TSTreeCursor cursor = ts_tree_cursor_new(node);
+  if (ts_tree_cursor_goto_parent(&cursor)) {
+    TSNode parent = ts_tree_cursor_current_node(&cursor);
+    if (strcmp(ts_node_type(parent), "binary_expression") != 0) {
+      printf("-");
+      ts_tree_cursor_delete(&cursor);
+      return;
+    }
+  } else {
     printf("-");
+    ts_tree_cursor_delete(&cursor);
     return;
   }
 
   printf("-");
-  TSNode next_sibling = ts_node_next_sibling(node);
-  if (!ts_node_is_null(next_sibling)) {
+  
+  ts_tree_cursor_reset(&cursor, node);
+  if (ts_tree_cursor_goto_next_sibling(&cursor)) {
+    TSNode next_sibling = ts_tree_cursor_current_node(&cursor);
     TSNode next_leaf = find_next_update_leaf(next_sibling);
     const char * type = ts_node_type(next_leaf);
-    if (strcmp(type, "update_expression") == 0 || strcmp(type, "unary_expression") == 0) {
+    if (strcmp(type,  "update_expression") == 0 || strcmp(type, "unary_expression") == 0) {
       TSNode child_node = ts_node_child(next_leaf, 0);
       const char * child_type = ts_node_type(child_node); 
       if (strcmp(child_type, "--") == 0 || strcmp(child_type, "-") == 0) {
@@ -108,14 +136,20 @@ void node_minus (TSNode node, struct visit_context * context) {
       }
     }
   }
+
+  ts_tree_cursor_delete(&cursor);
 }
 
 void node_else (TSNode node, struct visit_context * context) {
   printf("else");
-  TSNode next_sibling = ts_node_next_sibling(node);
-  if (!ts_node_is_null(next_sibling) && strcmp(ts_node_type(next_sibling), "statement_block") != 0) {
-    printf(" ");
+  TSTreeCursor cursor = ts_tree_cursor_new(node);
+  if (ts_tree_cursor_goto_next_sibling(&cursor)) {
+    TSNode next_sibling = ts_tree_cursor_current_node(&cursor);
+    if (strcmp(ts_node_type(next_sibling), "statement_block") != 0) {
+      printf(" ");
+    }
   }
+  ts_tree_cursor_delete(&cursor);
 }
 
 void node_import (TSNode node, struct visit_context * context) {
@@ -151,19 +185,37 @@ void node_from (TSNode node, struct visit_context * context) {
 }
 
 void node_identifier (TSNode node, struct visit_context * context) {
-  TSNode parent = ts_node_parent(node);
-  if (strcmp(ts_node_type(parent), "import_clause") == 0) {
-    printf(" ");
+  TSTreeCursor cursor = ts_tree_cursor_new(node);
+  if (ts_tree_cursor_goto_parent(&cursor)) {
+    TSNode parent = ts_tree_cursor_current_node(&cursor);
+    if (strcmp(ts_node_type(parent), "import_clause") == 0) {
+      printf(" ");
+    }
   }
 
   printf("%s", ts_node_text(node, context));
 
-  TSNode next_sibling = ts_node_next_sibling(node);
-  if (ts_node_is_null(next_sibling) || (!ts_node_is_null(next_sibling) && strcmp(ts_node_type(next_sibling), ",") != 0)) { 
-    TSNode next_parent_sibling = ts_node_next_sibling(parent);
-    if(!ts_node_is_null(next_parent_sibling) && strcmp(ts_node_type(next_parent_sibling), "from") == 0) 
-      printf(" "); 
+  ts_tree_cursor_reset(&cursor, node);
+  if (ts_tree_cursor_goto_next_sibling(&cursor)) {
+    TSNode next_sibling = ts_tree_cursor_current_node(&cursor);
+    if (strcmp(ts_node_type(next_sibling), ",") != 0) { 
+      if (ts_tree_cursor_goto_parent(&cursor)) {
+        TSNode next_parent_sibling = ts_tree_cursor_current_node(&cursor);
+        if(strcmp(ts_node_type(next_parent_sibling), "from") == 0) {
+          printf(" "); 
+        }
+      }
+    }
+  } else {
+    if (ts_tree_cursor_goto_parent(&cursor)) {
+      TSNode next_parent_sibling = ts_tree_cursor_current_node(&cursor);
+      if(strcmp(ts_node_type(next_parent_sibling), "from") == 0) {
+        printf(" "); 
+      }
+    }
   }
+
+  ts_tree_cursor_delete(&cursor);
 }
 
 void node_function_declaration (TSNode node, struct visit_context * context) {
@@ -395,12 +447,16 @@ void node_number (TSNode node, struct visit_context * context) {
 }
 
 void node_semi (TSNode node, struct visit_context * context) {
-  TSNode next_sibling = ts_node_next_sibling(node);
-  if (!ts_node_is_null(next_sibling) && strcmp(ts_node_type(next_sibling), "}") != 0) {
-    printf(";");
-  } else if(ts_node_is_null(next_sibling)) {
+  TSTreeCursor cursor = ts_tree_cursor_new(node);
+  if (ts_tree_cursor_goto_next_sibling(&cursor)) {
+    TSNode next_sibling = ts_tree_cursor_current_node(&cursor);
+    if (strcmp(ts_node_type(next_sibling), "}") != 0) {
+      printf(";");
+    }
+  } else {
     printf(";");
   }
+  ts_tree_cursor_delete(&cursor);
 
   if (BEAUTIFY)
     printf("\n");
