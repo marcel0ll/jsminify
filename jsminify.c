@@ -3,7 +3,7 @@
 #include <math.h>
 #include "libs/tree-sitter/lib/include/tree_sitter/api.h"
 #include "libs/tree-sitter-visitor/tree-sitter-visitor.h"
-#include <node_api.h>
+/* #include <node_api.h> */
 
 char * VERSION = "v0.0.20";
 int debug = 0;
@@ -612,46 +612,45 @@ int parse_file(int argc, char * argv[]) {
   return 0;
 }
 
-/* int main (int argc, char * argv[]) { */
-  /* parse_file(argc, argv); */
+int main (int argc, char * argv[]) {
+  parse_file(argc, argv);
+}
+
+/* napi_value jsminify (napi_env env, napi_callback_info cbinfo) { */
+  /* size_t argc = 0; */
+  /* napi_get_cb_info(env, cbinfo, &argc, NULL, NULL, NULL); */
+
+  /* napi_value *argv = (napi_value *) malloc(argc * sizeof(uintptr_t)); */
+  /* napi_get_cb_info(env, cbinfo, &argc, argv, NULL, NULL); */
+
+  /* if (argc < 1) { */
+    /* napi_throw_error(env, "EINVAL", "Too few arguments"); */
+    /* return NULL; */
+  /* } */
+
+  /* char ** args = malloc(sizeof(char *) * argc); */
+  /* size_t str_len = 1024; */
+  /* for (size_t i = 0; i < argc; i++) { */
+    /* args[i] = malloc(str_len); */
+    /* if(napi_get_value_string_utf8(env, argv[i], (char *) args[i], 1024, &str_len) != napi_ok) { */
+      /* napi_throw_error(env, "EINVAL", "Expected string"); */
+      /* return NULL; */
+    /* } */
+  /* } */
+
+  /* parse_file(argc, args); */
+  /* for (size_t i = 0; i < argc; i++) */
+    /* free(args[i]); */
+  /* free(args); */
+
+  /* return NULL; */
 /* } */
 
+/* napi_value init_all (napi_env env, napi_value exports) { */
+  /* napi_value jsminify_fn; */
+  /* napi_create_function(env, NULL, 0, jsminify, NULL, &jsminify_fn); */
+  /* napi_set_named_property(env, exports, "jsminify", jsminify_fn); */
+  /* return exports; */
+/* } */
 
-napi_value jsminify (napi_env env, napi_callback_info cbinfo) {
-  size_t argc = 0;
-  napi_get_cb_info(env, cbinfo, &argc, NULL, NULL, NULL);
-
-  napi_value *argv = (napi_value *) malloc(argc * sizeof(uintptr_t));
-  napi_get_cb_info(env, cbinfo, &argc, argv, NULL, NULL);
-
-  if (argc < 1) {
-    napi_throw_error(env, "EINVAL", "Too few arguments");
-    return NULL;
-  }
-
-  char ** args = malloc(sizeof(char *) * argc);
-  size_t str_len = 1024;
-  for (size_t i = 0; i < argc; i++) {
-    args[i] = malloc(str_len);
-    if(napi_get_value_string_utf8(env, argv[i], (char *) args[i], 1024, &str_len) != napi_ok) {
-      napi_throw_error(env, "EINVAL", "Expected string");
-      return NULL;
-    }
-  }
-
-  parse_file(argc, args);
-  for (size_t i = 0; i < argc; i++)
-    free(args[i]);
-  free(args);
-
-  return NULL;
-}
-
-napi_value init_all (napi_env env, napi_value exports) {
-  napi_value jsminify_fn;
-  napi_create_function(env, NULL, 0, jsminify, NULL, &jsminify_fn);
-  napi_set_named_property(env, exports, "jsminify", jsminify_fn);
-  return exports;
-}
-
-NAPI_MODULE(NODE_GYP_MODULE_NAME, init_all)
+/* NAPI_MODULE(NODE_GYP_MODULE_NAME, init_all) */

@@ -45,6 +45,8 @@ Change `require` inside `index.js` to the one with DEBUG in the path
 
 ## Dependencies (all installed as git submodules under libs/)
 
+> please let me know better ways to handle this
+
 - [tree-sitter](https://github.com/tree-sitter/tree-sitter)
 - [tree-sitter-javascript](https://github.com/tree-sitter/tree-sitter-javascript)
 - [tree-sitter-visitor](https://github.com/marcel0ll/tree-sitter-visitor)
@@ -82,10 +84,19 @@ implemented by jsminify, missing minificaiton opportunities and bugs.
 
 Better tests are currently being written in [test/](./test/README.md)
 
+## Profiling
+
+I am using `gcc.sh` to build jsminify and then using `perf` and `flamegraph`
+to create somekind of visualization of what is going on. 
+
+I would love to hear about better ways to profile this.
+
 ## Improvements
 
 Due to how tree-sitter works it might be possible to only re-minify edited
-parts of a file while developing. Not sure about this.
+parts of a file while developing. Not sure about this, and not sure if this
+would be valuable to anyone as it is already really fast to minify using
+jsminify.
 
 ## Roadmap
 
