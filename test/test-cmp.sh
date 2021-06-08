@@ -25,11 +25,15 @@ for f in comp/*; do
   time jsminify $f > res/${f%%.js}.min.jsm.js
   echo uglifyjs 
   time uglifyjs $f > res/${f%%.js}.min.ugli.js
+  echo terser 
+  time terser $f > res/${f%%.js}.min.ter.js
 
   if [ -z "$TIME_ONLY" ]; then
     prettier res/${f%%.js}.min.jsm.js > res/${f%%.js}.pre.jsm.js
     prettier res/${f%%.js}.min.ugli.js > res/${f%%.js}.pre.ugli.js
+    prettier res/${f%%.js}.min.ter.js > res/${f%%.js}.pre.ter.js
   fi
 
-  diff res/${f%%.js}.pre.ugli.js res/${f%%.js}.pre.jsm.js &> res/${f%%.js}.diff
+  diff res/${f%%.js}.pre.ugli.js res/${f%%.js}.pre.jsm.js &> res/${f%%.js}.ugli.diff
+  diff res/${f%%.js}.pre.ter.js res/${f%%.js}.pre.jsm.js &> res/${f%%.js}.ter.diff
 done
