@@ -1,6 +1,6 @@
 clang                                               \
-  -I tree-sitter/lib/include                        \
-  -I tree-sitter/lib/src                            \
+  -I ./libs/tree-sitter/lib/include                        \
+  -I ./libs/tree-sitter/lib/src                            \
   -lm \
   jsminify.c                                        \
   ./libs/tree-sitter-visitor/tree-sitter-visitor.c  \

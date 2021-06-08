@@ -1,7 +1,7 @@
 #include <string.h>
 #include <stdio.h>
 #include <math.h>
-#include <tree_sitter/api.h>
+#include "libs/tree-sitter/lib/include/tree_sitter/api.h"
 #include "libs/tree-sitter-visitor/tree-sitter-visitor.h"
 #include <node_api.h>
 
